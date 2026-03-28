@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Edit Gender — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── CUSTOM DROPDOWN STYLES ── */
+  .nk-select-wrapper { position: relative; width: 100%; }
+  
+  .nk-select-trigger {
+    width: 100%;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nk-select-trigger:hover { border-color: #707072; }
+  .nk-select-trigger:focus { outline: none; border-color: #111; }
+
+  .nk-options-panel {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-top: 8px;
+    z-index: 1000;
+    display: none; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .nk-option {
+    padding: 16px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #444;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nk-option:hover { background: #f9f9f9; color: #111; }
+  .nk-option.selected { font-weight: 600; color: #111; background: #f5f5f5; }
+
+  #hiddenGenderInput { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div style="max-width: 500px; margin: auto;">
+    <a href="{% url 'profile' %}" class="text-dark text-decoration-none d-block mb-4">
+      <i class="bi bi-chevron-left"></i> Back to Profile
+    </a>
+
+    <h1 class="fw-bold mb-4">Edit Gender</h1>
+    
+    <form method="POST" id="genderForm">
+      {% csrf_token %}
+      <input type="hidden" name="gender" id="hiddenGenderInput" value="{{ request.user.profile.gender }}">
+      
+      <div class="mb-5">
+        <label class="form-label fw-bold text-uppercase small text-muted">Select Gender</label>
+        
+        <div class="nk-select-wrapper">
+          <div class="nk-select-trigger" id="genderTrigger">
+            <span id="selectedGenderLabel">
+              {% if request.user.profile.gender %}{{ request.user.profile.get_gender_display }}
+              {% else %}Select...{% endif %}
+            </span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+
+          <div class="nk-options-panel" id="genderPanel">
+            <div class="nk-option" data-value="male">Male</div>
+            <div class="nk-option" data-value="female">Female</div>
+            <div class="nk-option" data-value="other">Other</div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const gTrigger = document.getElementById('genderTrigger');
+  const gPanel = document.getElementById('genderPanel');
+  const gHiddenInput = document.getElementById('hiddenGenderInput');
+  const gLabel = document.getElementById('selectedGenderLabel');
+  const gOptions = document.querySelectorAll('.nk-option');
+
+  gTrigger.addEventListener('click', () => {
+    gPanel.style.display = gPanel.style.display === 'block' ? 'none' : 'block';
+  });
+
+  gOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      const val = option.getAttribute('data-value');
+      gHiddenInput.value = val;
+      gLabel.innerText = option.innerText;
+      gPanel.style.display = 'none';
+      
+      gOptions.forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    });
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!gTrigger.contains(e.target) && !gPanel.contains(e.target)) {
+      gPanel.style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}

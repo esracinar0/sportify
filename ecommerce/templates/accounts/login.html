@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block title %}Login — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    min-height: calc(100vh - 64px);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+  .auth-card { width: 100%; max-width: 420px; }
+
+  .auth-brand { text-align: center; margin-bottom: 40px; }
+  .auth-brand .logo {
+    font-size: 28px; font-weight: 900;
+    letter-spacing: -0.5px; text-transform: uppercase; color: #0a0a0a;
+  }
+  .auth-brand .logo span { color: #E8000D; }
+  .auth-brand p { font-size: 13px; color: #6c757d; margin-top: 6px; letter-spacing: 0.5px; }
+
+  .auth-card h2 {
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.3px; margin-top: 32px; margin-bottom: 14px;
+  }
+
+  .sp-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #0a0a0a; margin-bottom: 6px; display: block;
+  }
+  .sp-input {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid #e0e0e0; border-radius: 2px;
+    font-size: 14px; color: #0a0a0a; background: #fff;
+    outline: none; transition: border-color 0.2s; font-family: inherit;
+  }
+  .sp-input:focus { border-color: #0a0a0a; }
+
+  /* Password wrapper for eye icon */
+  .password-wrapper { position: relative; }
+  .password-wrapper .sp-input { padding-right: 46px; }
+  .eye-toggle {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #aaa;
+    font-size: 16px;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .eye-toggle:hover { color: #0a0a0a; }
+
+  .field-error { font-size: 12px; color: #E8000D; margin-top: 5px; }
+  .field-error::before { content: '— '; }
+
+  /* Remember me + Forgot password row */
+  .login-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0 24px;
+  }
+  .remember-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #6c757d;
+    cursor: pointer;
+  }
+  .remember-label input[type="checkbox"] {
+    accent-color: #0a0a0a;
+    width: 14px; height: 14px;
+    cursor: pointer;
+  }
+  .forgot-link {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.5px; color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .forgot-link:hover { color: #E8000D; }
+
+  .btn-sp-login {
+    width: 100%; padding: 14px; background: #0a0a0a; color: #fff;
+    border: none; border-radius: 2px; font-size: 13px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-sp-login:hover { background: #E8000D; }
+
+  .divider {
+    text-align: center; margin: 28px 0 0;
+    font-size: 13px; color: #6c757d;
+  }
+  .divider a {
+    color: #0a0a0a; font-weight: 700; text-decoration: none;
+    border-bottom: 1px solid #0a0a0a; padding-bottom: 1px;
+  }
+  .divider a:hover { color: #E8000D; border-color: #E8000D; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <div class="logo">Sport<span>ify</span></div>
+      <p>Performance Sports Shoes</p>
+    </div>
+
+    <h2>Welcome back.</h2>
+
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div style="margin-bottom: 20px;">
+        <label class="sp-label" for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+        {% for error in form.username.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div style="margin-bottom: 4px;">
+        <label class="sp-label" for="password-field">Password</label>
+        <div class="password-wrapper">
+          {{ form.password }}
+          <span class="eye-toggle" id="eye-toggle" onclick="togglePassword()">
+            <i class="bi bi-eye" id="eye-icon"></i>
+          </span>
+        </div>
+        {% for error in form.password.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="login-meta">
+        <label class="remember-label">
+          <input type="checkbox" name="remember_me"> Remember me
+        </label>
+        <a href="{% url 'password_reset' %}" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-sp-login">Sign In</button>
+    </form>
+
+    <div class="divider">
+      New to Sportify? <a href="{% url 'register' %}">Register now</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function togglePassword() {
+    const field = document.getElementById('password-field');
+    const icon  = document.getElementById('eye-icon');
+    if (field.type === 'password') {
+      field.type = 'text';
+      icon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+      field.type = 'password';
+      icon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+  }
+</script>
+{% endblock %}
+```
+
+---
+
+## Step 6 — Password Reset Email Templates
+
+Create two plain text files (not HTML) in `templates/accounts/`:
+
+**FILE: `templates/accounts/password_reset_subject.txt`**
+```
+Reset your Sportify password
+```
+
+**FILE: `templates/accounts/password_reset_email.txt`**
+```
+Hi {{ user.username }},
+
+You requested a password reset for your Sportify account.
+
+Click the link below to set a new password:
+http://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+This link will expire in 24 hours.
+
+If you did not request this, you can safely ignore this email.
+
+— The Sportify Team

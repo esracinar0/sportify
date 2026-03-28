@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Favorites — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .nk-profile-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 80px;
+  }
+  
+  /* ── LEFT SIDEBAR MENU ── */
+  .nk-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+  }
+  .nk-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nk-menu li {
+    margin-bottom: 16px;
+  }
+  .nk-menu a {
+    text-decoration: none;
+    color: var(--nk-gray);
+    font-size: 20px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+  .nk-menu a:hover, .nk-menu a.active {
+    color: var(--nk-black);
+  }
+
+  /* ── RIGHT CONTENT AREA ── */
+  .nk-content {
+    flex-grow: 1;
+  }
+  .nk-content h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── FAVORITES GRID ── */
+  .fav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+  }
+  
+  .fav-card {
+    text-decoration: none;
+    color: var(--nk-black);
+    transition: opacity 0.2s ease;
+    display: block;
+  }
+  .fav-card:hover {
+    opacity: 0.7;
+  }
+  
+  .fav-card-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .fav-card-brand {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--nk-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  
+  .fav-card-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  .fav-card-price {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .nk-profile-container {
+      flex-direction: column;
+      gap: 40px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nk-profile-container">
+  
+  <div class="nk-sidebar">
+    <ul class="nk-menu">
+      <li><a href="#">Profile</a></li>
+      <li><a href="{% url 'orders' %}">Orders</a></li>
+      <li><a href="{% url 'favorites' %}" class="active">Favorites</a></li>
+      <li><a href="#">Inbox</a></li>
+      <li><a href="#">Experiences</a></li>
+      <li><a href="{% url 'profile' %}">Account Settings</a></li>
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+    </ul>
+  </div>
+
+  <div class="nk-content">
+    <h1>Favorites</h1>
+    
+    {% if favorites %}
+      <div class="fav-grid">
+        {% for fav in favorites %}
+        <a href="{% url 'product_detail' fav.product.pk %}" class="fav-card">
+          
+          {% if fav.product.images.first %}
+            <img src="{{ fav.product.images.first.get_url }}" class="fav-card-image" alt="{{ fav.product.name }}">
+          {% else %}
+            <div class="fav-card-image d-flex align-items-center justify-content-center text-muted">No Image</div>
+          {% endif %}
+          
+          <div class="fav-card-brand">{{ fav.product.brand.name }}</div>
+          <div class="fav-card-title">{{ fav.product.name }}</div>
+          <div class="fav-card-price">${{ fav.product.price }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="padding: 40px 0; border-top: 1px solid #e5e5e5;">
+        <p style="color: var(--nk-gray); font-size: 16px;">Items added to your Favorites will be saved here.</p>
+        <a href="{% url 'shoes' %}" class="btn btn-dark rounded-pill mt-3 px-4 py-2">Shop Shoes</a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

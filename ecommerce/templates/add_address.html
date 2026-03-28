@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Add Address — Sportify{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div style="max-width: 500px; margin: auto;">
+        <a href="{% url 'addresses' %}" class="text-dark text-decoration-none d-block mb-4">
+            <i class="bi bi-chevron-left"></i> Back to Addresses
+        </a>
+
+        <h1 class="fw-bold mb-4">Add New Address</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="form-label fw-bold text-uppercase small text-muted">Full Name</label>
+                <input type="text" name="full_name" class="form-control form-control-lg rounded-3" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-uppercase small text-muted">Phone Number</label>
+                <input type="text" name="phone" class="form-control form-control-lg rounded-3" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-uppercase small text-muted">Street Address</label>
+                <input type="text" name="address" class="form-control form-control-lg rounded-3" required>
+            </div>
+            <div class="row">
+                <div class="col-6 mb-4">
+                    <label class="form-label fw-bold text-uppercase small text-muted">City</label>
+                    <input type="text" name="city" class="form-control form-control-lg rounded-3" required>
+                </div>
+                <div class="col-6 mb-4">
+                    <label class="form-label fw-bold text-uppercase small text-muted">Postal Code</label>
+                    <input type="text" name="zip" class="form-control form-control-lg rounded-3" required>
+                </div>
+            </div>
+            <div class="mb-5">
+                <label class="form-label fw-bold text-uppercase small text-muted">Country</label>
+                <input type="text" name="country" class="form-control form-control-lg rounded-3" value="Türkiye" required>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold">Save Address</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

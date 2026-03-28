@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Notification Settings — Sportify{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div style="max-width: 500px; margin: auto;">
+    
+    <a href="{% url 'profile' %}" class="text-dark text-decoration-none d-block mb-4">
+      <i class="bi bi-chevron-left"></i> Back to Profile
+    </a>
+
+    <h1 class="fw-bold mb-4">Notification Settings</h1>
+    <p class="text-muted mb-4">Manage how you receive updates and offers from Sportify.</p>
+
+    <form method="POST" class="nk-form">
+      {% csrf_token %}
+      
+      <div class="form-check form-switch mb-4 d-flex align-items-center justify-content-between p-0">
+        <label class="form-check-label fw-medium" for="emailNote" style="font-size: 16px;">
+          Email Notifications
+          <div class="text-muted small fw-normal">Promotions & Deals</div>
+        </label>
+        <input class="form-check-input ms-0" type="checkbox" name="promo_emails" id="emailNote" 
+               style="width: 45px; height: 24px; cursor: pointer;"
+               {% if request.user.profile.promo_emails %}checked{% endif %}>
+      </div>
+
+      <hr class="my-4" style="opacity: 0.1;">
+
+      <div class="form-check form-switch mb-5 d-flex align-items-center justify-content-between p-0">
+        <label class="form-check-label fw-medium" for="smsNote" style="font-size: 16px;">
+          SMS Alerts
+          <div class="text-muted small fw-normal">Order & Shipping Updates</div>
+        </label>
+        <input class="form-check-input ms-0" type="checkbox" name="sms_alerts" id="smsNote" 
+               style="width: 45px; height: 24px; cursor: pointer;"
+               {% if request.user.profile.sms_alerts %}checked{% endif %}>
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold">Save Preferences</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

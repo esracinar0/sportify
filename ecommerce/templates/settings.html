@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %}Settings — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .nk-profile-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 80px;
+  }
+  
+  /* ── LEFT SIDEBAR MENU ── */
+  .nk-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+  }
+  .nk-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nk-menu li {
+    margin-bottom: 16px;
+  }
+  .nk-menu a {
+    text-decoration: none;
+    color: var(--nk-gray);
+    font-size: 20px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+  .nk-menu a:hover, .nk-menu a.active {
+    color: var(--nk-black);
+  }
+
+  /* ── RIGHT CONTENT AREA ── */
+  .nk-content {
+    flex-grow: 1;
+    max-width: 500px;
+  }
+  
+  .nk-settings-title {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+  }
+
+  .nk-settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nk-settings-item {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 0;
+    text-decoration: none;
+    color: var(--nk-black);
+    transition: opacity 0.2s ease;
+  }
+  
+  .nk-settings-item:hover {
+    opacity: 0.6;
+    color: var(--nk-black);
+  }
+
+  .nk-settings-item i {
+    font-size: 24px;
+    color: var(--nk-black);
+    width: 28px;
+    text-align: center;
+  }
+
+  .nk-settings-item span {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .nk-profile-container {
+      flex-direction: column;
+      gap: 40px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nk-profile-container">
+  
+  <div class="nk-sidebar">
+    <ul class="nk-menu">
+      <li><a href="{% url 'profile' %}">Profile</a></li>
+      <li><a href="{% url 'orders' %}">Orders</a></li>
+      <li><a href="{% url 'favorites' %}">Favorites</a></li>
+      <li><a href="#">Inbox</a></li>
+      <li><a href="#">Experiences</a></li>
+      <li><a href="{% url 'settings' %}" class="active">Account Settings</a></li>
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+    </ul>
+  </div>
+
+  <div class="nk-content">
+    <h1 class="nk-settings-title">Settings</h1>
+    
+    <div class="nk-settings-list">
+      <a href="{% url 'account_details' %}" class="nk-settings-item">
+        <i class="bi bi-person"></i>
+        <span>Account Details</span>
+      </a>
+      
+      <a href="{% url 'payment_methods' %}" class="nk-settings-item">
+        <i class="bi bi-credit-card"></i>
+        <span>Payment Methods</span>
+      </a>
+      
+      <a href="{% url 'addresses' %}" class="nk-settings-item">
+        <i class="bi bi-box-seam"></i>
+        <span>Delivery Addresses</span>
+      </a>
+      
+      <a href="#" class="nk-settings-item">
+        <i class="bi bi-shop"></i>
+        <span>Store Preferences</span>
+      </a>
+      
+      <a href="{% url 'notifications' %}" class="nk-settings-item">
+        <i class="bi bi-envelope"></i>
+        <span>Communication Preferences</span>
+      </a>
+      
+      <a href="#" class="nk-settings-item">
+        <i class="bi bi-share"></i>
+        <span>Profile Visibility</span>
+      </a>
+      
+      <a href="#" class="nk-settings-item">
+        <i class="bi bi-link-45deg"></i>
+        <span>Linked Accounts</span>
+      </a>
+      
+      <a href="{% url 'privacy' %}" class="nk-settings-item">
+        <i class="bi bi-person-lock"></i>
+        <span>Privacy</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

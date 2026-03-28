@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Privacy — Sportify{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div style="max-width: 500px; margin: auto;">
+    
+    <a href="{% url 'profile' %}" class="text-dark text-decoration-none d-block mb-4">
+      <i class="bi bi-chevron-left"></i> Back to Profile
+    </a>
+
+    <h1 class="fw-bold mb-4">Privacy</h1>
+    <p class="text-muted mb-5">Control how your information is used and manage your visibility on Sportify.</p>
+
+    <div class="nk-privacy-card p-4 border rounded-3 bg-white shadow-sm">
+      
+      <div class="form-check form-switch d-flex align-items-center justify-content-between p-0 mb-4">
+        <label class="form-check-label fw-medium" for="publicProfile" style="font-size: 16px;">
+          Public Profile
+          <div class="text-muted small fw-normal">Allow other members to see your favorites and activity.</div>
+        </label>
+        <input class="form-check-input ms-0" type="checkbox" id="publicProfile" style="width: 45px; height: 24px; cursor: pointer;">
+      </div>
+
+      <hr class="my-4" style="opacity: 0.1;">
+
+      <div class="form-check form-switch d-flex align-items-center justify-content-between p-0 mb-4">
+        <label class="form-check-label fw-medium" for="dataUsage" style="font-size: 16px;">
+          Personalized Experience
+          <div class="text-muted small fw-normal">Use my browsing history to show more relevant products.</div>
+        </label>
+        <input class="form-check-input ms-0" type="checkbox" id="dataUsage" checked style="width: 45px; height: 24px; cursor: pointer;">
+      </div>
+
+    </div>
+
+    <div class="mt-5 text-center">
+      <p class="small text-muted mb-2">Want to manage your stored data?</p>
+      <a href="#" class="text-danger small fw-bold text-decoration-none">Request Data Deletion</a>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'profile' %}" class="btn btn-dark w-100 rounded-pill py-3 fw-bold text-decoration-none">
+          Done
+        </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

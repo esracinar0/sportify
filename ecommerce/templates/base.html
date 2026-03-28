@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Sportify{% endblock %}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --nk-black: #111111;
+        --nk-dark-gray: #222222;
+        --nk-gray: #707072;
+        --nk-light-gray: #f5f5f5;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background: #fff;
+        color: var(--nk-black);
+      }
+
+      /* ── TOP UTILITY BAR ── */
+      .nk-top-bar {
+        background: var(--nk-light-gray);
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 40px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .nk-top-bar a {
+        color: var(--nk-black);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .nk-top-bar a:hover {
+        color: var(--nk-gray);
+      }
+      .nk-top-bar .divider {
+        margin: 0 12px;
+        color: var(--nk-black);
+      }
+
+      /* ── MAIN NAVBAR ── */
+      .nk-navbar {
+        background: #fff;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      .nk-logo {
+        font-size: 24px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: var(--nk-black);
+        text-decoration: none;
+        text-transform: uppercase;
+        font-style: italic; /* Sporty feel */
+      }
+
+      .nk-center-links {
+        display: flex;
+        gap: 24px;
+      }
+      .nk-center-links a {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--nk-black);
+        text-decoration: none;
+        transition: border 0.2s;
+        padding-bottom: 4px;
+        border-bottom: 2px solid transparent;
+      }
+      .nk-center-links a:hover {
+        border-bottom: 2px solid var(--nk-black);
+      }
+
+      .nk-right-icons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .nk-right-icons a {
+        color: var(--nk-black);
+        font-size: 20px;
+        text-decoration: none;
+      }
+      .nk-right-icons a:hover {
+        color: var(--nk-gray);
+      }
+
+      /* ── NIKE STYLE DROPDOWN ── */
+      .dropdown-toggle::after {
+        display: none !important; /* Hide default arrow */
+      }
+
+      .nk-dropdown-menu {
+        background-color: var(--nk-dark-gray) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 24px 28px !important;
+        min-width: 240px;
+        margin-top: 10px !important;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .nk-dropdown-header {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      .nk-dropdown-item {
+        color: #cccccc !important;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 0 !important;
+        text-decoration: none;
+        display: block;
+        background: transparent !important;
+        transition: color 0.2s ease;
+      }
+      .nk-dropdown-item:hover {
+        color: #ffffff !important;
+      }
+
+      /* ── ALERTS ── */
+      .sp-alerts {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+      }
+      .sp-alert {
+        padding: 16px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        background: var(--nk-black);
+        color: #fff;
+        border-radius: 4px;
+        margin-top: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      /* Search dropdown */
+      .search-results {
+        background: #fff;
+        border: 1px solid #e9e9e9;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        max-width: 380px;
+        width: 380px;
+        overflow: hidden;
+      }
+      .search-container input {
+        width: 220px;
+        opacity: 1;
+        transform: scaleX(1);
+        transition:
+          width 180ms ease,
+          opacity 180ms ease,
+          transform 180ms ease,
+          padding 180ms ease;
+        padding: 8px 10px;
+        box-sizing: border-box;
+      }
+      .search-container.closed input {
+        width: 0;
+        opacity: 0;
+        transform: scaleX(0.95);
+        padding: 0;
+        pointer-events: none;
+      }
+      .search-item .search-meta div:nth-child(2) {
+        display: none;
+      } /* Hide description */
+      .search-item {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        align-items: center;
+        text-decoration: none;
+        color: var(--nk-black);
+        /* Removed border-bottom here — handled by + selector below */
+      }
+      .search-item + .search-item {
+        border-top: 1px solid #e0e0e0;
+      }
+      .search-thumb {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      .search-meta {
+        font-size: 13px;
+      }
+      .search-name {
+        font-weight: 700;
+      }
+      .search-brand {
+        color: var(--nk-gray);
+        font-weight: 500;
+      }
+      .search-price {
+        margin-left: auto;
+        font-weight: 700;
+      }
+
+      /* ── SEARCH TOGGLE ── */
+      /* Animated search field: collapsed by default */
+      #search-field {
+        width: 0;
+        opacity: 0;
+        padding: 0;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+        transition:
+          width 200ms ease,
+          opacity 200ms ease,
+          padding 200ms ease;
+        vertical-align: middle;
+        pointer-events: none;
+      }
+      #search-field.open {
+        width: 220px;
+        opacity: 1;
+        padding: 8px 10px;
+        pointer-events: auto;
+      }
+
+      /* Keep center links truly centered regardless of right-side width */
+      .nk-navbar {
+        position: relative;
+      }
+      .nk-center-links {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <div class="nk-top-bar">
+      <a href="#">Find a Store</a>
+      <span class="divider">|</span>
+      <a href="#">Help</a>
+      <span class="divider">|</span>
+
+      {% if request.user.is_authenticated %}
+      <div class="dropdown">
+        <a
+          href="#"
+          class="d-flex align-items-center dropdown-toggle"
+          id="profileDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Hi, {{ request.user.first_name|default:request.user.username }}
+          <i class="bi bi-person fs-5 ms-2"></i>
+        </a>
+        <div
+          class="dropdown-menu dropdown-menu-end nk-dropdown-menu"
+          aria-labelledby="profileDropdown"
+        >
+          <div class="nk-dropdown-header">Account</div>
+          <a class="nk-dropdown-item" href="{% url 'profile' %}">Profile</a>
+          <a class="nk-dropdown-item" href="{% url 'orders' %}">Orders</a>
+          <a class="nk-dropdown-item" href="{% url 'favorites' %}">Favorites</a>
+          <a class="nk-dropdown-item" href="#">Experiences</a>
+          <a class="nk-dropdown-item" href="{% url 'account_details' %}"
+            >Account Settings</a
+          >
+          <a
+            class="nk-dropdown-item"
+            style="margin-top: 16px"
+            href="{% url 'logout' %}"
+            >Log Out</a
+          >
+        </div>
+      </div>
+      {% else %}
+      <a href="{% url 'register' %}">Join Us</a>
+      <span class="divider">|</span>
+      <a href="{% url 'login' %}">Sign In</a>
+      {% endif %}
+    </div>
+
+    <nav class="nk-navbar">
+      <a href="{% url 'home' %}" class="nk-logo">SPORTIFY</a>
+
+      <div class="nk-center-links">
+        <a href="#">New</a>
+        <a href="#">Men</a>
+        <a href="#">Women</a>
+        <a href="#">Kids</a>
+        <a href="{% url 'shoes' %}">Sport</a>
+      </div>
+
+      <div class="nk-right-icons">
+        <div class="search-container" style="position: relative">
+          <input
+            id="search-field"
+            type="search"
+            placeholder="Search products..."
+            aria-label="Search"
+          />
+          <div
+            id="search-results"
+            class="search-results"
+            style="
+              position: absolute;
+              right: 0;
+              top: 44px;
+              display: none;
+              z-index: 1050;
+            "
+          ></div>
+        </div>
+        <a href="#" id="search-toggle"><i class="bi bi-search"></i></a>
+        <a href="#"><i class="bi bi-bag"></i></a>
+      </div>
+    </nav>
+
+    {% if messages %}
+    <div class="sp-alerts">
+      {% for message in messages %}
+      <div class="sp-alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% block content %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll(".sp-alert").forEach((el) => {
+          el.style.transition = "opacity 0.4s";
+          el.style.opacity = "0";
+          setTimeout(() => el.remove(), 400);
+        });
+      }, 4000);
+    </script>
+    {% block extra_js %}
+    <script>
+      (function () {
+        const input = document.getElementById("search-field");
+        const results = document.getElementById("search-results");
+        const toggleBtn = document.getElementById("search-toggle");
+        let timer = null;
+
+        // Toggle search field visibility on icon click
+        toggleBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const isOpen = input.classList.toggle("open");
+          if (isOpen) {
+            toggleBtn.style.display = "none";
+            setTimeout(() => input.focus(), 200);
+          } else {
+            toggleBtn.style.display = "";
+            clearResults();
+          }
+        });
+
+        function clearResults() {
+          results.innerHTML = "";
+          results.style.display = "none";
+        }
+
+        function render(items) {
+          results.innerHTML = "";
+          if (!items.length) {
+            clearResults();
+            return;
+          }
+          items.forEach((it) => {
+            const a = document.createElement("a");
+            a.href = "/shoes/" + encodeURIComponent(it.id) + "/";
+            a.className = "search-item";
+            a.innerHTML = `
+              ${it.image_url ? `<img class="search-thumb" src="${it.image_url}" alt="${escapeHtml(it.name)}"/>` : ""}
+              <div class="search-meta">
+                <div class="search-name">${escapeHtml(it.name)}</div>
+                <div class="search-brand">${escapeHtml(it.brand)}</div>
+              </div>
+              <div class="search-price">$${escapeHtml(it.price)}</div>
+            `;
+            results.appendChild(a);
+          });
+          results.style.display = "block";
+        }
+
+        function escapeHtml(str) {
+          if (!str) return "";
+          return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        input &&
+          input.addEventListener("input", function (e) {
+            const q = this.value.trim();
+            if (timer) clearTimeout(timer);
+            if (!q) {
+              clearResults();
+              return;
+            }
+            timer = setTimeout(() => {
+              fetch("/api/search/?q=" + encodeURIComponent(q))
+                .then((r) => r.json())
+                .then((data) => render(data.results || []))
+                .catch(() => clearResults());
+            }, 250);
+          });
+
+        // Close on outside click
+        document.addEventListener("click", function (ev) {
+          if (
+            !input.contains(ev.target) &&
+            !results.contains(ev.target) &&
+            !toggleBtn.contains(ev.target)
+          ) {
+            input.classList.remove("open");
+            toggleBtn.style.display = "";
+            clearResults();
+          }
+        });
+      })();
+    </script>
+    {% endblock %}
+  </body>
+</html>

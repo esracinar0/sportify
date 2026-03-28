@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}Edit Location — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── CUSTOM DROPDOWN STYLES ── */
+  .nk-select-wrapper { position: relative; width: 100%; }
+  
+  .nk-select-trigger {
+    width: 100%;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nk-select-trigger:hover { border-color: #707072; }
+  .nk-select-trigger:focus { outline: none; border-color: #111; box-shadow: 0 0 0 1px #111; }
+
+  .nk-options-panel {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-top: 8px;
+    max-height: 350px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  }
+
+  .nk-search-wrapper {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding: 12px;
+    border-bottom: 1px solid #f5f5f5;
+    z-index: 10;
+  }
+
+  .nk-search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .nk-search-input:focus { border-color: #111; }
+
+  .nk-option {
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #444;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nk-option:hover { background: #f9f9f9; color: #111; }
+  .nk-option.selected { font-weight: 600; color: #111; background: #f5f5f5; }
+
+  #hiddenLocInput { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div style="max-width: 500px; margin: auto;">
+    <a href="{% url 'profile' %}" class="text-dark text-decoration-none d-block mb-4">
+      <i class="bi bi-chevron-left"></i> Back to Profile
+    </a>
+
+    <h1 class="fw-bold mb-2">Location</h1>
+    <p class="text-muted mb-5">Select your country/region to personalize your store experience.</p>
+    
+    <form method="POST" id="locForm">
+      {% csrf_token %}
+      <input type="hidden" name="location" id="hiddenLocInput" value="{{ request.user.profile.country|default:'Türkiye' }}">
+      
+      <div class="mb-5">
+        <label class="form-label fw-bold text-uppercase small text-muted">Country/Region</label>
+        
+        <div class="nk-select-wrapper">
+          <div class="nk-select-trigger" id="locTrigger">
+            <span id="selectedLocLabel">{{ request.user.profile.country|default:'Türkiye' }}</span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+
+          <div class="nk-options-panel" id="locPanel">
+            <div class="nk-search-wrapper">
+                <input type="text" class="nk-search-input" id="locPanelSearch" placeholder="Search country..." autocomplete="off">
+            </div>
+            <div id="locOptionsList">
+              <div class="nk-option" data-value="Türkiye">Türkiye</div>
+              <div class="nk-option" data-value="United States">United States</div>
+              <div class="nk-option" data-value="United Kingdom">United Kingdom</div>
+              <div class="nk-option" data-value="Germany">Germany</div>
+              <div class="nk-option" data-value="France">France</div>
+              <div class="nk-option" data-value="Italy">Italy</div>
+              <div class="nk-option" data-value="Spain">Spain</div>
+              <div class="nk-option" data-value="Canada">Canada</div>
+              <div class="nk-option" data-value="Australia">Australia</div>
+              <div class="nk-option" data-value="Russia">Russia</div>
+              <div class="nk-option" data-value="China">China</div>
+              <div class="nk-option" data-value="Japan">Japan</div>
+              <div class="nk-option" data-value="South Korea">South Korea</div>
+              <div class="nk-option" data-value="Azerbaijan">Azerbaijan</div>
+              <div class="nk-option" data-value="Netherlands">Netherlands</div>
+              <div class="nk-option" data-value="Sweden">Sweden</div>
+              <div class="nk-option" data-value="Switzerland">Switzerland</div>
+              <div class="nk-option" data-value="Norway">Norway</div>
+              <div class="nk-option" data-value="Other">Other</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const locTrigger = document.getElementById('locTrigger');
+  const locPanel = document.getElementById('locPanel');
+  const locSearch = document.getElementById('locPanelSearch');
+  const hiddenLocInput = document.getElementById('hiddenLocInput');
+  const selectedLocLabel = document.getElementById('selectedLocLabel');
+  const locOptions = document.querySelectorAll('.nk-option');
+
+  // Open/Close logic
+  locTrigger.addEventListener('click', () => {
+    const isVisible = locPanel.style.display === 'block';
+    locPanel.style.display = isVisible ? 'none' : 'block';
+    if(!isVisible) locSearch.focus();
+  });
+
+  // Select Item logic
+  locOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      const val = option.getAttribute('data-value');
+      hiddenLocInput.value = val;
+      selectedLocLabel.innerText = val;
+      locPanel.style.display = 'none';
+      
+      locOptions.forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    });
+  });
+
+  // Search logic
+  locSearch.addEventListener('keyup', (e) => {
+    const filter = e.target.value.toLowerCase();
+    locOptions.forEach(opt => {
+      const text = opt.innerText.toLowerCase();
+      opt.style.display = text.includes(filter) ? 'block' : 'none';
+    });
+  });
+
+  // Close when clicking outside the menu
+  window.addEventListener('click', (e) => {
+    if (!locTrigger.contains(e.target) && !locPanel.contains(e.target)) {
+      locPanel.style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}

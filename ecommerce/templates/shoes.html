@@ -1,0 +1,392 @@
+{# prettier-ignore #} {% extends "base.html" %} {% block title %}Shoes -
+SPORTIFY{% endblock %} {% block extra_css %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Hero Section */
+  .main-content {
+    padding: 80px 8% 60px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 50px;
+    border-bottom: 2px solid #E8000D;
+    padding-bottom: 30px;
+  }
+
+  .page-title {
+    font-size: 64px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: -1.5px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #fff 0%, #E8000D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-subtitle {
+    font-size: 16px;
+    color: #bbb;
+    margin-bottom: 0;
+    letter-spacing: 0.5px;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-section {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #888;
+    font-weight: 900;
+  }
+
+  .brand-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .brand-pill {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1.5px solid #333;
+    border-radius: 24px;
+    color: #999;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .brand-pill:hover {
+    border-color: #E8000D;
+    color: #E8000D;
+    transform: translateY(-2px);
+  }
+
+  .brand-pill.active {
+    background: #E8000D;
+    border-color: #E8000D;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(232, 0, 13, 0.3);
+  }
+
+  .sort-select {
+    padding: 10px 16px;
+    border-radius: 24px;
+    border: 1.5px solid #333;
+    background: transparent;
+    color: #bbb;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .sort-select:hover,
+  .sort-select:focus {
+    border-color: #E8000D;
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 12px rgba(232, 0, 13, 0.2);
+  }
+
+  .sort-select option {
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  /* Product Grid */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+    margin-bottom: 60px;
+  }
+
+  /* Product Card */
+  .product-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(232, 0, 13, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .product-card:hover {
+    border-color: #E8000D;
+    box-shadow: 0 12px 48px rgba(232, 0, 13, 0.15);
+    transform: translateY(-8px);
+    background: #0f0f0f;
+  }
+
+  .product-card:hover::before {
+    opacity: 1;
+  }
+
+  .product-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .product-card:hover .product-image {
+    transform: scale(1.08);
+  }
+
+  .product-info {
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .brand-name {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #E8000D;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .product-name {
+    font-size: 16px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+  }
+
+  .product-price {
+    font-size: 18px;
+    font-weight: 900;
+    color: #E8000D;
+    margin: 0;
+  }
+
+  /* Empty State */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+  }
+
+  .empty-state p {
+    font-size: 18px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .page-title {
+      font-size: 48px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 60px 6% 40px;
+    }
+
+    .page-title {
+      font-size: 36px;
+    }
+
+    .toolbar {
+      gap: 16px;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .product-image {
+      height: 200px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .main-content {
+      padding: 40px 4% 30px;
+    }
+
+    .page-title {
+      font-size: 28px;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<main class="main-content">
+  <div class="page-header">
+    <h1 class="page-title">Collective</h1>
+    <p class="page-subtitle">Performance footwear engineered for speed</p>
+  </div>
+
+  <!-- Filtering & Sorting -->
+  <div class="toolbar">
+    <div class="filter-section">
+      <span class="filter-label">Brands:</span>
+      <div class="brand-pills" id="brandPills">
+        {% for brand in brands %}
+          <button 
+            type="button" 
+            class="brand-pill {% if brand.id|stringformat:'s' in selected_brands %}active{% endif %}"
+            data-brand-id="{{ brand.id }}"
+            onclick="toggleBrand(this)">
+            {{ brand.name }}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Sorting -->
+    <select id="sortSelect" class="sort-select">
+      <option value="newest" selected>Newest</option>
+      <option value="name">Name</option>
+      <option value="priceLow">Price ↑</option>
+      <option value="priceHigh">Price ↓</option>
+    </select>
+  </div>
+
+  {% if shoes_info %}
+  <div class="product-grid" id="product-list">
+    {% for item in shoes_info %} {% with shoe=item.shoe %}
+    <article
+      class="product-card"
+      onclick="window.location.href='{% url 'product_detail' shoe.pk %}'"
+      data-name="{{ shoe.name }}"
+      data-price="{{ shoe.price }}"
+      data-id="{{ shoe.id }}"
+    >
+      {% if item.image_url %}
+      <img
+        src="{{ item.image_url }}"
+        alt="{{ shoe.name }}"
+        class="product-image"
+      />
+      {% else %}
+      <div class="product-image" style="background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No image</div>
+      {% endif %}
+
+      <div class="product-info">
+        <div class="brand-name">{{ shoe.brand.name }}</div>
+        <h3 class="product-name">{{ shoe.name }}</h3>
+        <div class="product-price">${{ shoe.price }}</div>
+      </div>
+    </article>
+    {% endwith %} {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>No shoes found for the selected filters.</p>
+  </div>
+  {% endif %}
+</main>
+{% endblock %} {% block extra_js %}
+<script>
+  document.getElementById("sortSelect").addEventListener("change", function () {
+    let grid = document.getElementById("product-list");
+    let cards = Array.from(document.querySelectorAll(".product-card"));
+
+    if (this.value === "name") {
+      cards.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name));
+    }
+    if (this.value === "priceLow") {
+      cards.sort((a, b) => a.dataset.price - b.dataset.price);
+    }
+    if (this.value === "priceHigh") {
+      cards.sort((a, b) => b.dataset.price - a.dataset.price);
+    }
+    if (this.value === "newest") {
+      cards.sort((a, b) => b.dataset.id - a.dataset.id);
+    }
+
+    cards.forEach((card) => grid.appendChild(card));
+  });
+
+  // Brand Filter Toggle
+  function toggleBrand(button) {
+    const brandId = button.dataset.brandId;
+    const url = new URL(window.location);
+    const brands = url.searchParams.getAll('brand');
+
+    if (button.classList.contains('active')) {
+      // Remove brand
+      button.classList.remove('active');
+      const idx = brands.indexOf(brandId);
+      if (idx > -1) brands.splice(idx, 1);
+    } else {
+      // Add brand
+      button.classList.add('active');
+      brands.push(brandId);
+    }
+
+    // Update URL
+    url.searchParams.delete('brand');
+    brands.forEach(b => url.searchParams.append('brand', b));
+    window.location = url.toString();
+  }
+</script>
+{% endblock %}

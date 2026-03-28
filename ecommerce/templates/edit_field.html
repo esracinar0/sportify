@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="nk-profile-container">
+  <div class="nk-content" style="max-width: 400px; margin: auto;">
+    <a href="{% url 'profile' %}" class="text-dark text-decoration-none mb-4 d-block"><i class="bi bi-arrow-left"></i> Back</a>
+    <h1 class="mb-4">Edit {{ label }}</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="mb-3">
+        <input type="{{ type|default:'text' }}" name="{{ field_name }}" class="form-control py-3" value="{{ value|default:'' }}">
+      </div>
+      <button type="submit" class="btn btn-dark w-100 rounded-pill py-3">Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

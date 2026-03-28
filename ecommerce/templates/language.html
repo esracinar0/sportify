@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}Language — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── CUSTOM DROPDOWN STYLES ── */
+  .nk-select-wrapper { position: relative; width: 100%; }
+  
+  .nk-select-trigger {
+    width: 100%;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .nk-select-trigger:focus { outline: none; border-color: #111; }
+
+  .nk-options-panel {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-top: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .nk-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid #f5f5f5;
+    outline: none;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+  }
+
+  .nk-option {
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+  .nk-option:hover { background: #f9f9f9; }
+  .nk-option.selected { font-weight: 600; color: #111; background: #f5f5f5; }
+
+  /* Hide the actual hidden input */
+  #hiddenLangInput { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div style="max-width: 500px; margin: auto;">
+    <a href="{% url 'profile' %}" class="text-dark text-decoration-none d-block mb-4">
+      <i class="bi bi-chevron-left"></i> Back to Profile
+    </a>
+
+    <h1 class="fw-bold mb-4">Language</h1>
+    
+    <form method="POST" id="langForm">
+      {% csrf_token %}
+      <input type="hidden" name="language" id="hiddenLangInput" value="{{ request.user.profile.language|default:'English' }}">
+      
+      <div class="mb-5">
+        <label class="form-label fw-bold text-uppercase small text-muted">Preferred Language</label>
+        
+        <div class="nk-select-wrapper">
+          <div class="nk-select-trigger" id="selectTrigger">
+            <span id="selectedLabel">{{ request.user.profile.language|default:'English' }}</span>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+
+          <div class="nk-options-panel" id="optionsPanel">
+            <input type="text" class="nk-search-input" id="panelSearch" placeholder="Search language..." autocomplete="off">
+            <div id="optionsList">
+              <div class="nk-option" data-value="Turkish">Türkçe (Turkish)</div>
+              <div class="nk-option" data-value="English">English</div>
+              <div class="nk-option" data-value="Russian">Русский (Russian)</div>
+              <div class="nk-option" data-value="Chinese">中文 (Chinese)</div>
+              <div class="nk-option" data-value="Spanish">Español (Spanish)</div>
+              <div class="nk-option" data-value="French">Français (French)</div>
+              <div class="nk-option" data-value="German">Deutsch (German)</div>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const trigger = document.getElementById('selectTrigger');
+  const panel = document.getElementById('optionsPanel');
+  const search = document.getElementById('panelSearch');
+  const hiddenInput = document.getElementById('hiddenLangInput');
+  const selectedLabel = document.getElementById('selectedLabel');
+  const options = document.querySelectorAll('.nk-option');
+
+  // Toggle Panel
+  trigger.addEventListener('click', () => {
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    if(panel.style.display === 'block') search.focus();
+  });
+
+  // Select Option
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      const val = option.getAttribute('data-value');
+      hiddenInput.value = val;
+      selectedLabel.innerText = option.innerText;
+      panel.style.display = 'none';
+      
+      options.forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    });
+  });
+
+  // Search Filter
+  search.addEventListener('keyup', (e) => {
+    const filter = e.target.value.toLowerCase();
+    options.forEach(opt => {
+      const text = opt.innerText.toLowerCase();
+      opt.style.display = text.includes(filter) ? 'block' : 'none';
+    });
+  });
+
+  // Close when clicking outside
+  window.addEventListener('click', (e) => {
+    if (!trigger.contains(e.target) && !panel.contains(e.target)) {
+      panel.style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}

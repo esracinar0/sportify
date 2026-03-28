@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Login — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    min-height: calc(100vh - 64px);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .auth-brand {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .auth-brand .logo {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    color: #0a0a0a;
+  }
+  .auth-brand .logo span { color: #E8000D; }
+  .auth-brand p {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .auth-card h2 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    margin-top: 32px;
+    margin-bottom: 14px;
+  }
+  .auth-card .subtitle {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 30px;
+  }
+  .auth-card .subtitle a {
+    color: #E8000D;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .sp-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #0a0a0a;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .sp-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 2px;
+    font-size: 14px;
+    color: #0a0a0a;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .sp-input:focus { border-color: #0a0a0a; }
+
+  .field-error {
+    font-size: 12px;
+    color: #E8000D;
+    margin-top: 5px;
+  }
+  .field-error::before { content: '— '; }
+
+  .btn-sp-login {
+    width: 100%;
+    padding: 14px;
+    background: #0a0a0a;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+  .btn-sp-login:hover { background: #E8000D; }
+
+  .forgot-password-link {
+    font-size: 12px;
+    color: #6c757d;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .forgot-password-link:hover {
+    color: #E8000D;
+    border-bottom: 1px solid #E8000D;
+  }
+
+  .divider {
+    text-align: center;
+    margin: 28px 0 0;
+    font-size: 13px;
+    color: #6c757d;
+  }
+  .divider a {
+    color: #0a0a0a;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid #0a0a0a;
+    padding-bottom: 1px;
+  }
+  .divider a:hover { color: #E8000D; border-color: #E8000D; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <div class="logo">Sport<span>ify</span></div>
+      <p>Performance Sports Shoes</p>
+    </div>
+
+    <h2>Welcome back.</h2>
+
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div style="margin-bottom: 20px;">
+        <label class="sp-label" for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+        {% for error in form.username.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label class="sp-label" for="{{ form.password.id_for_label }}">Password</label>
+        {{ form.password }}
+        {% for error in form.password.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div style="text-align: right; margin-bottom: 20px;">
+        <a href="{% url 'password_reset' %}" class="forgot-password-link">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-sp-login">Sign In</button>
+    </form>
+
+    <div class="divider">
+      New to Sportify? <a href="{% url 'register' %}">Register now</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

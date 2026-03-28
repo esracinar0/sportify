@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Account Details — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .nk-profile-container { max-width: 1000px; margin: 60px auto; padding: 0 20px; display: flex; gap: 80px; }
+  .nk-sidebar { width: 240px; flex-shrink: 0; }
+  .nk-menu { list-style: none; padding: 0; margin: 0; }
+  .nk-menu li { margin-bottom: 16px; }
+  .nk-menu a { text-decoration: none; color: var(--nk-gray); font-size: 20px; font-weight: 600; transition: color 0.2s; }
+  .nk-menu a:hover, .nk-menu a.active { color: var(--nk-black); }
+  .nk-content { flex-grow: 1; max-width: 500px; }
+
+  .nk-content h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 32px;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── CLEAN FORM STYLES ── */
+  .nk-form p {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    font-weight: 500;
+    color: var(--nk-black);
+  }
+  
+  .nk-form input, .nk-form select {
+    margin-top: 8px;
+    padding: 14px 16px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .nk-form input:focus, .nk-form select:focus {
+    border-color: var(--nk-black);
+  }
+
+  .nk-form .helptext {
+    font-size: 12px;
+    color: var(--nk-gray);
+    margin-top: 6px;
+    font-weight: 400;
+  }
+
+  .btn-nk-dark {
+    background: var(--nk-black);
+    color: #fff;
+    padding: 16px 32px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 16px;
+    transition: opacity 0.2s;
+  }
+  
+  .btn-nk-dark:hover {
+    opacity: 0.7;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nk-profile-container">
+  
+  <div class="nk-sidebar">
+    <ul class="nk-menu">
+      <li><a href="{% url 'profile' %}">Profile</a></li>
+      <li><a href="{% url 'orders' %}">Orders</a></li>
+      <li><a href="{% url 'favorites' %}">Favorites</a></li>
+      <li><a href="#">Inbox</a></li>
+      <li><a href="#">Experiences</a></li>
+      <li><a href="{% url 'settings' %}" class="active">Account Settings</a></li>
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+    </ul>
+  </div>
+
+  <div class="nk-content">
+    <h1>Account Details</h1>
+    
+    <form method="POST" enctype="multipart/form-data" class="nk-form">
+      {% csrf_token %}
+      
+      {{ user_form.as_p }}
+      
+      {{ profile_form.as_p }}
+      
+      <button type="submit" class="btn-nk-dark">Save Changes</button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

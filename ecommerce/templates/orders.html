@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}Orders — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .nk-profile-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 80px;
+  }
+  
+  /* ── LEFT SIDEBAR MENU ── */
+  .nk-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+  }
+  .nk-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nk-menu li {
+    margin-bottom: 16px;
+  }
+  .nk-menu a {
+    text-decoration: none;
+    color: var(--nk-gray);
+    font-size: 20px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+  .nk-menu a:hover, .nk-menu a.active {
+    color: var(--nk-black);
+  }
+
+  /* ── RIGHT CONTENT AREA ── */
+  .nk-content {
+    flex-grow: 1;
+  }
+  .nk-content h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── ORDERS LIST ── */
+  .order-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+  .order-label {
+    font-size: 14px;
+    color: var(--nk-gray);
+    margin-bottom: 4px;
+  }
+  .order-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--nk-black);
+  }
+  .order-status {
+    font-weight: 600;
+    color: var(--nk-black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+  }
+
+  .btn-nk-outline {
+    border: 1px solid var(--nk-black);
+    background: transparent;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--nk-black);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-nk-outline:hover {
+    background: var(--nk-black);
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .nk-profile-container {
+      flex-direction: column;
+      gap: 40px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nk-profile-container">
+  
+  <div class="nk-sidebar">
+    <ul class="nk-menu">
+      <li><a href="{% url 'profile' %}">Profile</a></li>
+      <li><a href="{% url 'orders' %}" class="active">Orders</a></li>
+      <li><a href="{% url 'favorites' %}">Favorites</a></li>
+      <li><a href="#">Inbox</a></li>
+      <li><a href="#">Experiences</a></li>
+      <li><a href="{% url 'settings' %}">Account Settings</a></li>
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+    </ul>
+  </div>
+
+  <div class="nk-content">
+    <h1>Orders</h1>
+    
+    {% if orders %}
+      {% for order in orders %}
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <div class="order-label">Order Date</div>
+            <div class="order-value">{{ order.created_at|date:"M d, Y" }}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="order-label">Total Price</div>
+            <div class="order-value">${{ order.total_price }}</div>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="order-status">
+            Status: 
+            {% if order.status == 'pending' %}<span class="text-warning">Pending</span>
+            {% elif order.status == 'paid' %}<span class="text-info">Paid</span>
+            {% elif order.status == 'shipped' %}<span class="text-primary">Shipped</span>
+            {% elif order.status == 'delivered' %}<span class="text-success">Delivered</span>
+            {% elif order.status == 'cancelled' %}<span class="text-danger">Cancelled</span>
+            {% else %}{{ order.get_status_display }}{% endif %}
+          </div>
+          <a href="#" class="btn-nk-outline">View Details</a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="padding: 40px 0; border-top: 1px solid #e5e5e5;">
+        <p style="color: var(--nk-gray); font-size: 16px;">You don't have any orders yet.</p>
+        <a href="{% url 'shoes' %}" class="btn btn-dark rounded-pill mt-3 px-4 py-2">Shop Now</a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Profile — Sportify{% endblock %}
+
+{% block extra_css %}
+<style>
+  .nk-profile-container { max-width: 1000px; margin: 60px auto; padding: 0 20px; display: flex; gap: 80px; }
+  .nk-sidebar { width: 240px; flex-shrink: 0; }
+  .nk-menu { list-style: none; padding: 0; margin: 0; }
+  .nk-menu li { margin-bottom: 16px; }
+  .nk-menu a { text-decoration: none; color: var(--nk-gray); font-size: 20px; font-weight: 600; transition: color 0.2s; }
+  .nk-menu a:hover, .nk-menu a.active { color: var(--nk-black); }
+  
+  .nk-content { flex-grow: 1; max-width: 600px; } 
+  
+  .nk-dashboard-header { display: flex; align-items: center; gap: 32px; margin-bottom: 40px; }
+  .nk-avatar-large {
+    width: 100px; height: 100px; background: var(--nk-light-gray); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 600; color: var(--nk-black);
+  }
+  .nk-dashboard-header h1 { font-size: 36px; font-weight: 600; margin-bottom: 8px; letter-spacing: -1px; }
+  .nk-member-since { font-size: 16px; color: var(--nk-gray); }
+
+  .nk-list-group { display: flex; flex-direction: column; margin-bottom: 32px; }
+  .nk-list-item {
+    display: flex; justify-content: space-between; align-items: center; padding: 24px 0;
+    border-bottom: 1px solid #e5e5e5; text-decoration: none; color: var(--nk-black); transition: opacity 0.2s ease;
+  }
+  .nk-list-item:first-child { border-top: 1px solid #e5e5e5; }
+  .nk-list-item:hover { opacity: 0.6; color: var(--nk-black); }
+  .nk-item-left { display: flex; flex-direction: column; gap: 4px; }
+  .nk-item-label { font-size: 16px; font-weight: 500; }
+  .nk-item-value { font-size: 14px; color: var(--nk-gray); }
+  .nk-item-icon { font-size: 20px; color: var(--nk-black); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nk-profile-container">
+  
+  <div class="nk-sidebar">
+    <ul class="nk-menu">
+      <li><a href="{% url 'profile' %}" class="active">Profile</a></li>
+      <li><a href="{% url 'orders' %}">Orders</a></li>
+      <li><a href="{% url 'favorites' %}">Favorites</a></li>
+      <li><a href="#">Inbox</a></li>
+      <li><a href="#">Experiences</a></li>
+      <li><a href="{% url 'settings' %}">Account Settings</a></li>
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+    </ul>
+  </div>
+
+  <div class="nk-content">
+    
+    <div class="nk-dashboard-header">
+      <div class="nk-avatar-large">
+        {{ request.user.first_name|first|default:request.user.username|first|upper }}
+      </div>
+      <div>
+        <h1>{{ request.user.first_name|default:request.user.username }} {{ request.user.last_name }}</h1>
+        <div class="nk-member-since">Sportify Member Since {{ request.user.date_joined|date:"Y" }}</div>
+      </div>
+    </div>
+
+    <div class="nk-list-group">
+      <a href="{% url 'account_details' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Email</span>
+          <span class="nk-item-value">{{ request.user.email }}</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+
+      <a href="{% url 'edit_phone' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Phone Number</span>
+          <span class="nk-item-value">{{ request.user.profile.phone_number|default:"Not provided" }}</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+
+      <a href="{% url 'edit_birthday' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Birthday</span>
+          <span class="nk-item-value">{{ request.user.profile.date_of_birth|default:"Not provided" }}</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+
+      <a href="{% url 'edit_gender' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Gender</span>
+          <span class="nk-item-value">{{ request.user.profile.get_gender_display|default:"Not provided" }}</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+    </div>
+
+    <div class="nk-list-group">
+      <a href="{% url 'notifications' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Notifications</span>
+          <span class="nk-item-value">
+            {% if request.user.profile.promo_emails %}Email{% endif %}
+            {% if request.user.profile.promo_emails and request.user.profile.sms_alerts %}, {% endif %}
+            {% if request.user.profile.sms_alerts %}SMS{% endif %}
+            {% if not request.user.profile.promo_emails and not request.user.profile.sms_alerts %}Off{% endif %}
+          </span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+    </div>
+
+    <div class="nk-list-group">
+      <a href="{% url 'edit_location' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Location</span>
+          <span class="nk-item-value">{{ request.user.profile.country|default:"Istanbul, Türkiye" }}</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+
+      <a href="{% url 'language' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Language</span>
+          <span class="nk-item-value">{{ request.user.profile.language|default:"English" }}</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+
+      <a href="{% url 'settings' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Account Settings</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+    </div>
+
+    <div class="nk-list-group">
+      <a href="{% url 'privacy' %}" class="nk-list-item">
+        <div class="nk-item-left">
+          <span class="nk-item-label">Privacy</span>
+        </div>
+        <i class="bi bi-chevron-right nk-item-icon"></i>
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

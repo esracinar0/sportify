@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% block title %}Sportify — Performance Sports Shoes{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── HERO ── */
+  .hero {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    background: url("https://images.unsplash.com/photo-1600185365483-26d7a4cc7519");
+    background-position: center;
+    background-size: cover;
+    padding: 0 85px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* .hero::after {
+    content: 'SPORTIFY';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 220px;
+    font-weight: 900;
+    color: null;
+    letter-spacing: -8px;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  } */
+
+  .hero-content {
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 2px;
+    background: #E8000D;
+  }
+
+  .hero-title {
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    color: #0a0a0a;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero-title span { color: #E8000D; }
+
+  .hero-sub {
+    font-size: 16px;
+    color: #6c757d;
+    line-height: 1.7;
+    max-width: 420px;
+    margin-bottom: 44px;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .btn-hero-primary {
+    padding: 16px 40px;
+    background: #0a0a0a;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-hero-primary:hover { background: #E8000D; color: #fff; }
+
+  .btn-hero-ghost {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #0a0a0a;
+    text-decoration: none;
+    border-bottom: 1.5px solid #0a0a0a;
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-hero-ghost:hover { color: #E8000D; border-color: #E8000D; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: #0a0a0a;
+    padding: 28px 80px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+  .stat-item {
+    text-align: center;
+    border-right: 1px solid #222;
+    padding: 0 40px;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-number {
+    font-size: 36px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  .stat-number span { color: #E8000D; }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* ── CATEGORIES ── */
+  .categories {
+    padding: 100px 80px;
+    background: #fff;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 48px;
+  }
+  .section-title {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+  }
+  .section-link {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #0a0a0a;
+    text-decoration: none;
+    border-bottom: 1.5px solid #0a0a0a;
+    padding-bottom: 2px;
+  }
+  .section-link:hover { color: #E8000D; border-color: #E8000D; }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .cat-card {
+    background: #f8f8f8;
+    padding: 48px 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-card:hover { background: #0a0a0a; transform: translateY(-2px); }
+  .cat-card:hover .cat-name  { color: #fff; }
+  .cat-card:hover .cat-count { color: #E8000D; }
+  .cat-card:hover .cat-arrow { color: #E8000D; }
+
+  .cat-icon { font-size: 32px; margin-bottom: 20px; }
+  .cat-name {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .cat-count {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+  }
+  .cat-arrow {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    font-size: 22px;
+    color: #ccc;
+    transition: color 0.2s;
+  }
+
+  /* ── FOOTER ── */
+  .sp-footer {
+    background: #0a0a0a;
+    padding: 40px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .footer-logo span { color: #E8000D; }
+  .footer-copy {
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 768px) {
+    .hero        { padding: 60px 24px; }
+    .hero::after { display: none; }
+    .stats-bar   { padding: 28px 24px; grid-template-columns: 1fr; gap: 24px; }
+    .stat-item   { border-right: none; border-bottom: 1px solid #222; padding-bottom: 24px; }
+    .categories  { padding: 60px 24px; }
+    .cat-grid    { grid-template-columns: 1fr; }
+    .sp-footer   { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">New Season 2025</div>
+    <h1 class="hero-title">
+      Built for<br><span>Champions.</span>
+    </h1>
+    <p class="hero-sub">
+      Sportify delivers performance sports shoes engineered for athletes who push limits every single day.
+    </p>
+    <div class="hero-actions">
+      <a href="#" class="btn-hero-primary">Shop Now</a>
+      <a href="#" class="btn-hero-ghost">View Lookbook →</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-number">200<span>+</span></div>
+    <div class="stat-label">Shoe Models</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">50<span>K</span></div>
+    <div class="stat-label">Happy Athletes</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">15<span>+</span></div>
+    <div class="stat-label">Sport Categories</div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories">
+  <div class="section-header">
+    <h2 class="section-title">Shop by Sport</h2>
+    <a href="#" class="section-link">All Categories →</a>
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card">
+      <div class="cat-icon">🏃</div>
+      <div class="cat-name">Running</div>
+      <div class="cat-count">48 products</div>
+      <div class="cat-arrow">→</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">⚽</div>
+      <div class="cat-name">Football</div>
+      <div class="cat-count">36 products</div>
+      <div class="cat-arrow">→</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🏀</div>
+      <div class="cat-name">Basketball</div>
+      <div class="cat-count">29 products</div>
+      <div class="cat-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="sp-footer">
+  <div class="footer-logo">Sport<span>ify</span></div>
+  <div class="footer-copy">© 2025 Sportify. All rights reserved.</div>
+</footer>
+
+{% endblock %}

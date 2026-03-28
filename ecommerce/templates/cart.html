@@ -1,0 +1,179 @@
+{% extends 'base.html' %} 
+
+{% block title %}Your Cart - SPORTIFY{% endblock %} 
+
+{% block content %}
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%), 
+                url('https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed !important;
+    background-size: cover !important;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,700&display=swap');
+
+  .cart-glass-container {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 40px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  }
+
+  .cart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+  }
+
+  /* Cart Item Row */
+  .cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .cart-item-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .cart-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .cart-item-title {
+    font-size: 20px;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 5px;
+  }
+
+  .cart-item-variant {
+    font-size: 14px;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .cart-item-price {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .btn-remove {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-remove:hover {
+    background: rgba(255, 50, 50, 0.8);
+    border-color: rgba(255, 50, 50, 0.8);
+    color: #fff;
+  }
+
+  .cart-summary {
+    margin-top: 30px;
+    text-align: right;
+  }
+
+  .cart-total {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .btn-checkout {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-checkout:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }
+</style>
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col-12 cart-glass-container">
+      <h1 class="cart-title">Your Cart</h1>
+
+      {% if cart_items %}
+        {% for item in cart_items %}
+          <div class="cart-item">
+            <div class="cart-item-left">
+              {% if item.image_url %}
+                <img src="{{ item.image_url }}" alt="{{ item.variant.product.name }}" class="cart-thumbnail">
+              {% else %}
+                <div class="cart-thumbnail" style="background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 10px;">No Image</div>
+              {% endif %}
+
+              <div>
+                <div class="cart-item-title">{{ item.variant.product.name }}</div>
+                <div class="cart-item-variant">
+                  Size: {{ item.variant.size }} &nbsp;|&nbsp; Color: {{ item.variant.color }}
+                </div>
+                <div style="font-size: 14px; color: #aaa; margin-top: 5px;">
+                  Qty: {{ item.quantity }}
+                </div>
+              </div>
+            </div>
+
+            <div class="text-end">
+              <div class="cart-item-price mb-2">${{ item.item_total }}</div>
+              <a href="{% url 'remove_from_cart' item.variant.id %}" class="btn-remove">Remove</a>
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="cart-summary">
+          <div class="cart-total">Total: ${{ cart_total }}</div>
+          <a href="#" class="btn-checkout">Proceed to Checkout</a>
+        </div>
+
+      {% else %}
+        <div class="text-center py-5">
+          <p style="font-size: 18px; color: #ccc; margin-bottom: 20px;">Your cart is currently empty.</p>
+          <a href="/" class="btn-checkout" style="padding: 10px 25px; font-size: 14px;">Continue Shopping</a>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
