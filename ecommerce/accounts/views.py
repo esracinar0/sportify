@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from .models import Product, UserProfile, Favorite, Order, Address, PaymentMethod, CartItem, Brand
+from .models import Product, UserProfile, Favorite, Order, Address, PaymentMethod, CartItem, Brand, ProductVariant, OrderItem
 from .forms import LoginForm, RegisterForm, UserUpdateForm, UserProfileForm, CustomPasswordResetForm, CustomSetPasswordForm
 
 # --- GENERAL VIEWS ---
@@ -211,11 +211,14 @@ def payment_methods_view(request):
 @login_required
 def add_payment_method(request):
     if request.method == 'POST':
-        card_num = request.POST.get('card_number')
+        card_num = request.POST.get('card_number') or ""
+        # Keep only digits when extracting last 4 (handles spaces/dashes)
+        digits = ''.join(ch for ch in card_num if ch.isdigit())
+        last4 = digits[-4:] if digits else (card_num.replace(' ', '')[-4:] if card_num else "0000")
         PaymentMethod.objects.create(
             user=request.user,
             card_holder_name=request.POST.get('card_holder'),
-            card_number_last4=card_num.replace(' ', '')[-4:] if card_num else "0000",
+            card_number_last4=last4,
             expiry_date=request.POST.get('expiry'),
             card_type='visa'
         )
@@ -327,6 +330,69 @@ def cart_page(request):
         'cart_total': cart_total,
     }
     return render(request, 'cart.html', context)
+
+
+@login_required
+def checkout(request):
+    """Simple checkout entry point.
+
+    - If cart is empty: redirect back to cart with a message.
+    - If user has saved payment methods: redirect to payment methods.
+    - Otherwise redirect to add a payment method.
+    """
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.info(request, 'Your cart is empty.')
+        return redirect('cart_page')
+
+    methods = PaymentMethod.objects.filter(user=request.user)
+    if methods.exists():
+        return redirect('payment_methods')
+    else:
+        messages.info(request, 'Please add a payment method to continue.')
+        return redirect('add_payment_method')
+
+
+@login_required
+def checkout_confirm(request):
+    if request.method != 'POST':
+        return redirect('payment_methods')
+
+    pm_id = request.POST.get('payment_method')
+    try:
+        pm = PaymentMethod.objects.get(id=pm_id, user=request.user)
+    except Exception:
+        messages.error(request, 'Invalid payment method selected.')
+        return redirect('payment_methods')
+
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.info(request, 'Your cart is empty.')
+        return redirect('cart_page')
+
+    # calculate total and create order
+    total = 0
+    order = Order.objects.create(user=request.user, total_price=0)
+    for variant_id, data in cart.items():
+        try:
+            variant = ProductVariant.objects.get(id=variant_id)
+        except ProductVariant.DoesNotExist:
+            continue
+        qty = data.get('quantity', 1)
+        price = variant.price()
+        OrderItem.objects.create(order=order, variant=variant, quantity=qty, price=price)
+        total += price * qty
+
+    order.total_price = total
+    order.status = 'paid'
+    order.save()
+
+    # clear session cart
+    request.session['cart'] = {}
+    request.session.modified = True
+
+    messages.success(request, f'Order #{order.id} placed successfully using {pm.card_type.title()} ****{pm.card_number_last4}.')
+    return redirect('orders')
 
 # --- PASSWORD RESET VIEWS ---
 

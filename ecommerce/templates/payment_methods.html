@@ -1,19 +1,54 @@
-{% extends 'base.html' %}
-{% block title %}Payment Methods — Sportify{% endblock %}
-
-{% block extra_css %}
+{# prettier-ignore #} {% extends 'base.html' %} {% block title %}Payment Methods
+— Sportify{% endblock %} {% block extra_css %}
 <style>
-  .nk-profile-container { max-width: 1000px; margin: 60px auto; padding: 0 20px; display: flex; gap: 80px; }
-  .nk-sidebar { width: 240px; flex-shrink: 0; }
-  .nk-menu { list-style: none; padding: 0; margin: 0; }
-  .nk-menu li { margin-bottom: 16px; }
-  .nk-menu a { text-decoration: none; color: var(--nk-gray); font-size: 20px; font-weight: 600; transition: color 0.2s; }
-  .nk-menu a:hover, .nk-menu a.active { color: var(--nk-black); }
+  .nk-profile-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 80px;
+  }
+  .nk-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+  }
+  .nk-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nk-menu li {
+    margin-bottom: 16px;
+  }
+  .nk-menu a {
+    text-decoration: none;
+    color: var(--nk-gray);
+    font-size: 20px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .nk-menu a:hover,
+  .nk-menu a.active {
+    color: var(--nk-black);
+  }
 
-  .nk-content { flex-grow: 1; max-width: 600px; }
-  .nk-header-group { margin-bottom: 40px; }
-  .nk-header-group h1 { font-size: 28px; font-weight: 500; letter-spacing: -0.5px; margin-bottom: 8px; }
-  .nk-header-group p { color: var(--nk-gray); font-size: 16px; }
+  .nk-content {
+    flex-grow: 1;
+    max-width: 600px;
+  }
+  .nk-header-group {
+    margin-bottom: 40px;
+  }
+  .nk-header-group h1 {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .nk-header-group p {
+    color: var(--nk-gray);
+    font-size: 16px;
+  }
 
   /* ── SAVED CARDS ── */
   .nk-payment-card {
@@ -26,12 +61,27 @@
     margin-bottom: 16px;
     transition: border-color 0.2s;
   }
-  .nk-payment-card:hover { border-color: var(--nk-black); }
-  
-  .nk-card-details { display: flex; align-items: center; gap: 20px; }
-  .nk-card-details i { font-size: 32px; color: var(--nk-black); }
-  .nk-card-text .card-name { font-weight: 600; font-size: 16px; }
-  .nk-card-text .card-expiry { color: var(--nk-gray); font-size: 14px; }
+  .nk-payment-card:hover {
+    border-color: var(--nk-black);
+  }
+
+  .nk-card-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .nk-card-details i {
+    font-size: 32px;
+    color: var(--nk-black);
+  }
+  .nk-card-text .card-name {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .nk-card-text .card-expiry {
+    color: var(--nk-gray);
+    font-size: 14px;
+  }
 
   .nk-add-btn {
     display: flex;
@@ -48,7 +98,11 @@
     margin-top: 24px;
     transition: all 0.2s;
   }
-  .nk-add-btn:hover { border-color: var(--nk-black); color: var(--nk-black); background: #f9f9f9; }
+  .nk-add-btn:hover {
+    border-color: var(--nk-black);
+    color: var(--nk-black);
+    background: #f9f9f9;
+  }
 
   .default-badge {
     background: #f5f5f5;
@@ -57,10 +111,19 @@
     font-size: 12px;
     font-weight: 600;
   }
+  /* Selected card state */
+  .nk-payment-card.selected {
+    border-color: var(--nk-black);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    background: #fff;
+  }
+  /* Progressive enhancement: if browser supports :has() */
+  .nk-payment-card:has(input:checked) {
+    border-color: var(--nk-black);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="nk-profile-container">
   <div class="nk-sidebar">
     <ul class="nk-menu">
@@ -69,43 +132,101 @@
       <li><a href="{% url 'favorites' %}">Favorites</a></li>
       <li><a href="#">Inbox</a></li>
       <li><a href="#">Experiences</a></li>
-      <li><a href="{% url 'settings' %}" class="active">Account Settings</a></li>
+      <li>
+        <a href="{% url 'settings' %}" class="active">Account Settings</a>
+      </li>
       <li><a href="{% url 'logout' %}">Log Out</a></li>
     </ul>
   </div>
 
   <div class="nk-content">
     <div class="nk-header-group">
-        <a href="{% url 'settings' %}" class="text-dark text-decoration-none d-block mb-3 small fw-bold">
-            <i class="bi bi-chevron-left"></i> Settings
-        </a>
-        <h1>Payment Methods</h1>
-        <p>Save payment methods to your account for faster checkout.</p>
+      <a
+        href="{% url 'settings' %}"
+        class="text-dark text-decoration-none d-block mb-3 small fw-bold"
+      >
+        <i class="bi bi-chevron-left"></i> Settings
+      </a>
+      <h1>Payment Methods</h1>
+      <p>Save payment methods to your account for faster checkout.</p>
     </div>
 
     <div class="nk-cards-list">
-      {% for card in methods %}
-        <div class="nk-payment-card">
+      {% if methods %}
+      <form method="post" action="{% url 'checkout_confirm' %}">
+        {% csrf_token %} {% for card in methods %}
+        <label class="nk-payment-card" style="cursor: pointer">
+          <input
+            type="radio"
+            name="payment_method"
+            value="{{ card.id }}"
+            style="display: none"
+            {%
+            if
+            card.is_default
+            %}checked{%
+            endif
+            %}
+          />
           <div class="nk-card-details">
             <i class="bi bi-credit-card"></i>
             <div class="nk-card-text">
-              <div class="card-name">{{ card.card_type|title }} ending in {{ card.card_number_last4 }}</div>
+              <div class="card-name">
+                {### prettier-ignore ###} {{ card.card_type|title }} ending in
+                {{ card.card_number_last4 }}
+              </div>
               <div class="card-expiry">Expires {{ card.expiry_date }}</div>
             </div>
           </div>
           {% if card.is_default %}
-            <span class="default-badge">Default</span>
+          <span class="default-badge">Default</span>
           {% endif %}
-        </div>
-      {% empty %}
-        <p class="text-muted">No saved payment methods yet.</p>
-      {% endfor %}
+        </label>
+        {% endfor %}
 
+        <div style="margin-top: 18px; text-align: right">
+          <button type="submit" class="btn btn-primary">
+            Continue with selected card
+          </button>
+        </div>
+      </form>
+      {% else %}
+      <p class="text-muted">No saved payment methods yet.</p>
       <a href="{% url 'add_payment_method' %}" class="nk-add-btn">
         <i class="bi bi-plus-lg"></i>
         Add New Payment Method
       </a>
+      {% endif %}
     </div>
   </div>
 </div>
+{% endblock %} {% block extra_js %}
+<script>
+  (function () {
+    // Find all payment card labels
+    const cards = Array.from(document.querySelectorAll(".nk-payment-card"));
+    if (!cards.length) return;
+
+    function clearSelected() {
+      cards.forEach((c) => c.classList.remove("selected"));
+    }
+
+    cards.forEach((card) => {
+      const input = card.querySelector('input[type="radio"]');
+      // Initialize selected state from checked input
+      if (input && input.checked) {
+        card.classList.add("selected");
+      }
+
+      // Click anywhere on the label selects the input and styles it
+      card.addEventListener("click", function () {
+        if (input) {
+          input.checked = true;
+        }
+        clearSelected();
+        card.classList.add("selected");
+      });
+    });
+  })();
+</script>
 {% endblock %}

@@ -1,3 +1,4 @@
+{# prettier-ignore #}
 <!doctype html>
 <html lang="en">
   <head>
@@ -23,6 +24,19 @@
       * {
         margin: 0;
         padding: 0;
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+          .nk-center-links {
+            display: none;
+          }
+          .nk-right-icons {
+            display: none;
+          }
+          #nk-hamburger {
+            display: block;
+          }
+        }
         box-sizing: border-box;
       }
 
@@ -339,9 +353,67 @@
           ></div>
         </div>
         <a href="#" id="search-toggle"><i class="bi bi-search"></i></a>
-        <a href="#"><i class="bi bi-bag"></i></a>
+        <a href="{% url 'cart_page' %}" id="cart-button"
+          ><i class="bi bi-bag"></i
+        ></a>
       </div>
+      <!-- Mobile hamburger -->
+      <button
+        id="nk-hamburger"
+        aria-label="Menu"
+        style="display: none; background: none; border: none; font-size: 22px"
+      >
+        <i class="bi bi-list"></i>
+      </button>
     </nav>
+
+    <!-- Mobile menu (hidden by default) -->
+    <div
+      id="nk-mobile-menu"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        z-index: 1050;
+        padding: 16px;
+        border-bottom: 1px solid #eee;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <a href="{% url 'home' %}" class="nk-logo">SPORTIFY</a>
+        <button
+          id="nk-mobile-close"
+          aria-label="Close"
+          style="background: none; border: none; font-size: 22px"
+        >
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div
+        style="
+          margin-top: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        "
+      >
+        <a href="#">New</a>
+        <a href="#">Men</a>
+        <a href="#">Women</a>
+        <a href="#">Kids</a>
+        <a href="{% url 'shoes' %}">Sport</a>
+        <a href="{% url 'cart_page' %}">Cart</a>
+      </div>
+    </div>
 
     {% if messages %}
     <div class="sp-alerts">
@@ -448,6 +520,22 @@
             clearResults();
           }
         });
+      })();
+      // Mobile menu toggle
+      (function () {
+        const openBtn = document.getElementById("nk-hamburger");
+        const closeBtn = document.getElementById("nk-mobile-close");
+        const menu = document.getElementById("nk-mobile-menu");
+        if (openBtn) {
+          openBtn.addEventListener("click", function () {
+            menu.style.display = "block";
+          });
+        }
+        if (closeBtn) {
+          closeBtn.addEventListener("click", function () {
+            menu.style.display = "none";
+          });
+        }
       })();
     </script>
     {% endblock %}
