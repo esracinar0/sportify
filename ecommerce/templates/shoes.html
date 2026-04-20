@@ -8,8 +8,8 @@ SPORTIFY{% endblock %} {% block extra_css %}
   }
 
   body {
-    background: #0a0a0a;
-    color: #fff;
+    background: #ffffff;
+    color: #0a0a0a;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     line-height: 1.6;
   }
@@ -23,7 +23,7 @@ SPORTIFY{% endblock %} {% block extra_css %}
 
   .page-header {
     margin-bottom: 50px;
-    border-bottom: 2px solid #E8000D;
+    border-bottom: 2px solid rgba(255,255,255,0.12);
     padding-bottom: 30px;
   }
 
@@ -33,7 +33,7 @@ SPORTIFY{% endblock %} {% block extra_css %}
     margin-bottom: 12px;
     letter-spacing: -1.5px;
     text-transform: uppercase;
-    background: linear-gradient(135deg, #fff 0%, #E8000D 100%);
+    background: linear-gradient(90deg, #93a0ab 0%, #E8000D 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -44,6 +44,8 @@ SPORTIFY{% endblock %} {% block extra_css %}
     color: #bbb;
     margin-bottom: 0;
     letter-spacing: 0.5px;
+    text-transform: uppercase;
+  
   }
 
   /* Toolbar */
@@ -80,9 +82,9 @@ SPORTIFY{% endblock %} {% block extra_css %}
   .brand-pill {
     padding: 8px 16px;
     background: transparent;
-    border: 1.5px solid #333;
+    border: 1.5px solid #e6e6e6;
     border-radius: 24px;
-    color: #999;
+    color: #333;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -100,16 +102,16 @@ SPORTIFY{% endblock %} {% block extra_css %}
   .brand-pill.active {
     background: #E8000D;
     border-color: #E8000D;
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(232, 0, 13, 0.3);
+    color: #ffffff;
+    box-shadow: 0 8px 24px rgba(232, 0, 13, 0.18);
   }
 
   .sort-select {
     padding: 10px 16px;
     border-radius: 24px;
-    border: 1.5px solid #333;
+    border: 1.5px solid #e6e6e6;
     background: transparent;
-    color: #bbb;
+    color: #333;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -121,9 +123,9 @@ SPORTIFY{% endblock %} {% block extra_css %}
   .sort-select:hover,
   .sort-select:focus {
     border-color: #E8000D;
-    color: #fff;
+    color: #0a0a0a;
     outline: none;
-    box-shadow: 0 0 12px rgba(232, 0, 13, 0.2);
+    box-shadow: 0 0 12px rgba(232, 0, 13, 0.12);
   }
 
   .sort-select option {
@@ -141,13 +143,14 @@ SPORTIFY{% endblock %} {% block extra_css %}
 
   /* Product Card */
   .product-card {
-    background: #111;
-    border: 1px solid #222;
+    background: #ffffff;
+    border: 1px solid #eaeaea;
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    color: #0a0a0a;
   }
 
   .product-card::before {
@@ -166,9 +169,9 @@ SPORTIFY{% endblock %} {% block extra_css %}
 
   .product-card:hover {
     border-color: #E8000D;
-    box-shadow: 0 12px 48px rgba(232, 0, 13, 0.15);
+    box-shadow: 0 12px 48px rgba(232, 0, 13, 0.08);
     transform: translateY(-8px);
-    background: #0f0f0f;
+    background: #ffffff;
   }
 
   .product-card:hover::before {
@@ -327,7 +330,7 @@ SPORTIFY{% endblock %} {% block extra_css %}
         class="product-image"
       />
       {% else %}
-      <div class="product-image" style="background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No image</div>
+      <div class="product-image" style="background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #777;">No image</div>
       {% endif %}
 
       <div class="product-info">
