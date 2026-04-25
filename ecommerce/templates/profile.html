@@ -85,6 +85,84 @@
     .nk-profile-container {
       flex-direction: column;
       gap: 40px;
+      margin: 40px auto;
+      padding: 0 12px;
+    }
+
+    .nk-sidebar {
+      width: 100%;
+    }
+
+    .nk-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nk-menu li {
+      margin-bottom: 0;
+    }
+
+    .nk-menu a {
+      font-size: 14px;
+      padding: 8px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .nk-menu a.active {
+      background: var(--nk-black);
+      color: #fff;
+      border-color: var(--nk-black);
+    }
+
+    .nk-settings-title {
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+
+    .nk-settings-item {
+      gap: 16px;
+      padding: 10px 0;
+    }
+
+    .nk-settings-item i {
+      font-size: 20px;
+    }
+
+    .nk-settings-item span {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nk-profile-container {
+      margin: 30px auto;
+      padding: 0 8px;
+    }
+
+    .nk-menu a {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    .nk-settings-title {
+      font-size: 20px;
+    }
+
+    .nk-settings-item {
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .nk-settings-item i {
+      font-size: 18px;
+      width: 24px;
+    }
+
+    .nk-settings-item span {
+      font-size: 13px;
     }
   }
 </style>

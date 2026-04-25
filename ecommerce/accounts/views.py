@@ -206,7 +206,9 @@ def privacy_view(request):
 @login_required
 def payment_methods_view(request):
     methods = PaymentMethod.objects.filter(user=request.user).order_by('-is_default', '-created_at')
-    return render(request, 'payment_methods.html', {'methods': methods})
+    cart = request.session.get('cart', {})
+    cart_has_items = bool(cart)
+    return render(request, 'payment_methods.html', {'methods': methods, 'cart_has_items': cart_has_items})
 
 @login_required
 def add_payment_method(request):
@@ -249,8 +251,31 @@ def add_address_view(request):
             country=request.POST.get('country')
         )
         messages.success(request, 'Address saved successfully!')
+        # If we are in a checkout flow (payment method stored), continue to address selection
+        if request.session.get('checkout_pm_id'):
+            return redirect('checkout_address')
+        # Otherwise go to addresses list
         return redirect('addresses')
     return render(request, 'add_address.html')
+
+
+@login_required
+def delete_address(request, addr_id):
+    if request.method != 'POST':
+        return redirect('addresses')
+
+    try:
+        addr = Address.objects.get(id=addr_id, user=request.user)
+    except Address.DoesNotExist:
+        messages.error(request, 'Address not found.')
+        return redirect('addresses')
+
+    addr.delete()
+    messages.success(request, 'Address deleted.')
+    # If in checkout flow, return to address selection
+    if request.session.get('checkout_pm_id'):
+        return redirect('checkout_address')
+    return redirect('addresses')
 
 # --- USER PROFILE SECTIONS ---
 
@@ -261,8 +286,51 @@ def favorites_view(request):
 
 @login_required
 def orders_view(request):
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    # Automatically update all user's orders based on creation time
+    now = timezone.now()
+    
+    # Update to delivered if 2+ days old
+    Order.objects.filter(
+        user=request.user,
+        status__in=['paid', 'shipped'],
+        created_at__lte=now - timedelta(days=2)
+    ).update(status='delivered')
+    
+    # Update to shipped if 1+ days old and still paid
+    Order.objects.filter(
+        user=request.user,
+        status='paid',
+        created_at__lte=now - timedelta(days=1)
+    ).update(status='shipped')
+    
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'orders.html', {'orders': orders})
+
+
+@login_required
+def order_detail(request, order_id):
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # Automatically update status based on creation time
+    now = timezone.now()
+    
+    # If order is 2+ days old and not delivered, mark as delivered
+    if order.status in ['paid', 'shipped'] and (now - order.created_at) >= timedelta(days=2):
+        order.status = 'delivered'
+        order.save()
+    # If order is 1+ days old and still paid, mark as shipped
+    elif order.status == 'paid' and (now - order.created_at) >= timedelta(days=1):
+        order.status = 'shipped'
+        order.save()
+    
+    items = order.items.select_related('variant__product').all()
+    return render(request, 'order_detail.html', {'order': order, 'items': items})
 
 # --- CART SECTION ---
 
@@ -298,6 +366,21 @@ def remove_from_cart(request, variant_id):
         request.session.modified = True
         
     return redirect('cart_page')
+
+
+def decrease_quantity(request, variant_id):
+    cart = request.session.get('cart', {})
+    
+    if str(variant_id) in cart:
+        if cart[str(variant_id)]['quantity'] > 1:
+            cart[str(variant_id)]['quantity'] -= 1
+        else:
+            del cart[str(variant_id)]
+        request.session['cart'] = cart
+        request.session.modified = True
+        
+    return redirect('cart_page')
+
 
 def cart_page(request):
     cart = request.session.get('cart', {})
@@ -393,6 +476,92 @@ def checkout_confirm(request):
 
     messages.success(request, f'Order #{order.id} placed successfully using {pm.card_type.title()} ****{pm.card_number_last4}.')
     return redirect('orders')
+
+
+@login_required
+def checkout_address(request):
+    """Handles selecting an address after a payment method is chosen.
+
+    - If POST contains only `payment_method`: store it in session and render address list.
+    - If POST contains `address`: finalize the order using stored payment method and chosen address.
+    """
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.info(request, 'Your cart is empty.')
+        return redirect('cart_page')
+
+    # User submitted a payment method and now needs to choose address
+    if request.method == 'POST' and request.POST.get('payment_method') and not request.POST.get('address'):
+        pm_id = request.POST.get('payment_method')
+        try:
+            pm = PaymentMethod.objects.get(id=pm_id, user=request.user)
+        except PaymentMethod.DoesNotExist:
+            messages.error(request, 'Invalid payment method selected.')
+            return redirect('payment_methods')
+
+        request.session['checkout_pm_id'] = pm.id
+        addresses = Address.objects.filter(user=request.user).order_by('-is_default', '-created_at')
+        return render(request, 'select_address.html', {'addresses': addresses})
+
+    # Finalize order when address is posted
+    if request.method == 'POST' and request.POST.get('address'):
+        addr_id = request.POST.get('address')
+        pm_id = request.session.get('checkout_pm_id') or request.POST.get('payment_method')
+
+        # require consent flags
+        if not (request.POST.get('accepted_terms') and request.POST.get('accepted_policy')):
+            messages.error(request, 'Please read and accept the required documents before placing your order.')
+            addresses = Address.objects.filter(user=request.user).order_by('-is_default', '-created_at')
+            return render(request, 'select_address.html', {'addresses': addresses})
+
+        try:
+            pm = PaymentMethod.objects.get(id=pm_id, user=request.user)
+        except Exception:
+            messages.error(request, 'Invalid payment method.')
+            return redirect('payment_methods')
+
+        try:
+            addr = Address.objects.get(id=addr_id, user=request.user)
+        except Address.DoesNotExist:
+            messages.error(request, 'Invalid address selected.')
+            return redirect('addresses')
+
+        # calculate total and create order (store shipping snapshot)
+        total = 0
+        order = Order.objects.create(
+            user=request.user,
+            total_price=0,
+            shipping_full_name=addr.full_name,
+            shipping_phone_number=addr.phone_number,
+            shipping_street_address=addr.street_address,
+            shipping_city=addr.city,
+            shipping_postal_code=addr.postal_code,
+            shipping_country=addr.country,
+        )
+        for variant_id, data in cart.items():
+            try:
+                variant = ProductVariant.objects.get(id=variant_id)
+            except ProductVariant.DoesNotExist:
+                continue
+            qty = data.get('quantity', 1)
+            price = variant.price()
+            OrderItem.objects.create(order=order, variant=variant, quantity=qty, price=price)
+            total += price * qty
+
+        order.total_price = total
+        order.status = 'paid'
+        order.save()
+
+        # clear session cart and checkout_pm
+        request.session['cart'] = {}
+        request.session.pop('checkout_pm_id', None)
+        request.session.modified = True
+
+        messages.success(request, f'✓ Order #{order.id} placed successfully! Using {pm.card_type.title()} ****{pm.card_number_last4} to {addr.full_name}, {addr.city}.')
+        return redirect('order_detail', order_id=order.id)
+
+    # If not POST, redirect back
+    return redirect('payment_methods')
 
 # --- PASSWORD RESET VIEWS ---
 

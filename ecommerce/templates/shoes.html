@@ -254,6 +254,22 @@ SPORTIFY{% endblock %} {% block extra_css %}
 
     .toolbar {
       gap: 16px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .filter-section {
+      flex-direction: column;
+      width: 100%;
+      align-items: flex-start;
+    }
+
+    .brand-pills {
+      width: 100%;
+    }
+
+    .sort-select {
+      width: 100%;
     }
 
     .product-grid {
@@ -275,8 +291,56 @@ SPORTIFY{% endblock %} {% block extra_css %}
       font-size: 28px;
     }
 
+    .page-subtitle {
+      font-size: 14px;
+    }
+
+    .toolbar {
+      gap: 12px;
+    }
+
+    .filter-label {
+      font-size: 10px;
+    }
+
+    .brand-pills {
+      gap: 8px;
+    }
+
+    .brand-pill {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    .sort-select {
+      font-size: 11px;
+      padding: 8px 12px;
+    }
+
     .product-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .product-image {
+      height: 150px;
+    }
+
+    .product-info {
+      padding: 12px;
+    }
+
+    .brand-name {
+      font-size: 9px;
+    }
+
+    .product-name {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .product-price {
+      font-size: 14px;
     }
   }
 </style>

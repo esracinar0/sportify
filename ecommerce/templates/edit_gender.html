@@ -48,6 +48,55 @@
   .nk-option.selected { font-weight: 600; color: #111; background: #f5f5f5; }
 
   #hiddenGenderInput { display: none; }
+
+  @media (max-width: 768px) {
+    .container {
+      margin-top: 40px !important;
+      padding: 0 12px !important;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .nk-select-trigger {
+      padding: 14px;
+      font-size: 14px;
+    }
+
+    .nk-option {
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+
+    .btn {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      margin-top: 30px !important;
+      padding: 0 8px !important;
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    .form-label {
+      font-size: 11px;
+    }
+
+    .nk-select-trigger {
+      font-size: 13px;
+    }
+
+    .nk-option {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
 </style>
 {% endblock %}
 

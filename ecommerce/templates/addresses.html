@@ -2,6 +2,57 @@
 {% block title %}Delivery Addresses — Sportify{% endblock %}
 
 {% block content %}
+<style>
+  @media (max-width: 768px) {
+    .container {
+      margin-top: 40px !important;
+      padding: 0 12px !important;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 16px !important;
+    }
+
+    .p-4 {
+      padding: 16px !important;
+    }
+
+    .btn {
+      font-size: 13px;
+      padding: 8px 12px !important;
+    }
+
+    .d-flex {
+      flex-direction: column;
+    }
+
+    .justify-content-between {
+      justify-content: flex-start !important;
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      margin-top: 30px !important;
+      padding: 0 8px !important;
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    .text-muted.small {
+      font-size: 12px;
+    }
+
+    .badge {
+      font-size: 11px;
+    }
+  }
+</style>
+
 <div class="container mt-5">
     <div style="max-width: 600px; margin: auto;">
         <a href="{% url 'settings' %}" class="text-dark text-decoration-none d-block mb-4">
@@ -20,9 +71,15 @@
                     <div class="text-muted small">{{ addr.city }}, {{ addr.postal_code }}</div>
                     <div class="text-muted small">{{ addr.country }}</div>
                 </div>
-                {% if addr.is_default %}
-                <span class="badge bg-light text-dark border rounded-pill px-3">Default</span>
-                {% endif %}
+                                <div class="d-flex flex-column align-items-end">
+                                    {% if addr.is_default %}
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 mb-2">Default</span>
+                                    {% endif %}
+                                    <form method="post" action="{% url 'delete_address' addr.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
             </div>
             {% empty %}
             <div class="text-center py-5 border rounded-3 border-dashed bg-light mb-4">

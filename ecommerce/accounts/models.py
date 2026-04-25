@@ -171,6 +171,13 @@ class Order(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     total_price = models.DecimalField(max_digits=12, decimal_places=2)
+    # Shipping snapshot fields (store address at time of order)
+    shipping_full_name = models.CharField(max_length=150, blank=True, default="")
+    shipping_phone_number = models.CharField(max_length=40, blank=True, default="")
+    shipping_street_address = models.CharField(max_length=255, blank=True, default="")
+    shipping_city = models.CharField(max_length=100, blank=True, default="")
+    shipping_postal_code = models.CharField(max_length=20, blank=True, default="")
+    shipping_country = models.CharField(max_length=100, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

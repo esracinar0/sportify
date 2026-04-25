@@ -29,16 +29,20 @@ urlpatterns = [
     path('settings/payment/add/', views.add_payment_method, name='add_payment_method'),
     path('settings/addresses/', views.addresses_view, name='addresses'),
     path('settings/addresses/add/', views.add_address_view, name='add_address'),
+    path('settings/addresses/delete/<int:addr_id>/', views.delete_address, name='delete_address'),
 
     # Other sections
     path('profile/favorites/', views.favorites_view, name='favorites'),
     path('profile/orders/', views.orders_view, name='orders'),
+    path('profile/orders/<int:order_id>/', views.order_detail, name='order_detail'),
     path('profile/addresses/', views.addresses_view, name='addresses'),
     
     # Shopping Cart & Checkout
     path('cart/', views.cart_page, name='cart_page'),
     path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/remove/<str:variant_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('cart/decrease/<str:variant_id>/', views.decrease_quantity, name='decrease_quantity'),
     path('checkout/', views.checkout, name='checkout'),
     path('checkout/confirm/', views.checkout_confirm, name='checkout_confirm'),
+    path('checkout/address/', views.checkout_address, name='checkout_address'),
 ]

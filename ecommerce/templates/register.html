@@ -127,6 +127,78 @@
     padding-bottom: 1px;
   }
   .divider a:hover { color: #E8000D; border-color: #E8000D; }
+
+  @media (max-width: 768px) {
+    .auth-page {
+      padding: 40px 16px;
+      min-height: auto;
+    }
+
+    .auth-card {
+      max-width: 100%;
+    }
+
+    .auth-brand .logo {
+      font-size: 24px;
+    }
+
+    .auth-card h2 {
+      font-size: 20px;
+      margin-top: 24px;
+    }
+
+    .two-col {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .auth-page {
+      padding: 30px 12px;
+    }
+
+    .auth-brand {
+      margin-bottom: 30px;
+    }
+
+    .auth-brand .logo {
+      font-size: 20px;
+    }
+
+    .auth-brand p {
+      font-size: 12px;
+    }
+
+    .auth-card h2 {
+      font-size: 18px;
+      margin-top: 20px;
+      margin-bottom: 12px;
+    }
+
+    .auth-card .subtitle {
+      font-size: 12px;
+    }
+
+    .sp-label {
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+
+    .sp-input {
+      padding: 11px 14px;
+      font-size: 13px;
+    }
+
+    .btn-sp-register {
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .password-hint {
+      font-size: 10px;
+    }
+  }
 </style>
 {% endblock %}
 

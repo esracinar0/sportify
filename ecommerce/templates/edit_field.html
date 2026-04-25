@@ -1,5 +1,49 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+  @media (max-width: 768px) {
+    .nk-profile-container {
+      margin: 40px auto;
+      padding: 0 12px;
+    }
+
+    .nk-content {
+      max-width: 100% !important;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px !important;
+    }
+
+    .form-control {
+      font-size: 14px;
+      padding: 10px 14px !important;
+    }
+
+    .btn {
+      font-size: 14px;
+      padding: 12px 20px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nk-profile-container {
+      margin: 30px auto;
+      padding: 0 8px;
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    .form-control {
+      font-size: 13px;
+      padding: 8px 12px !important;
+    }
+  }
+</style>
+
 <div class="nk-profile-container">
   <div class="nk-content" style="max-width: 400px; margin: auto;">
     <a href="{% url 'profile' %}" class="text-dark text-decoration-none mb-4 d-block"><i class="bi bi-arrow-left"></i> Back</a>
@@ -13,4 +57,3 @@
     </form>
   </div>
 </div>
-{% endblock %}

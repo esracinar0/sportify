@@ -122,6 +122,94 @@
     border-color: var(--nk-black);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
+
+  @media (max-width: 768px) {
+    .nk-profile-container {
+      flex-direction: column;
+      gap: 40px;
+      margin: 40px auto;
+      padding: 0 12px;
+    }
+
+    .nk-sidebar {
+      width: 100%;
+    }
+
+    .nk-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nk-menu li {
+      margin-bottom: 0;
+    }
+
+    .nk-menu a {
+      font-size: 14px;
+      padding: 8px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .nk-menu a.active {
+      background: var(--nk-black);
+      color: #fff;
+      border-color: var(--nk-black);
+    }
+
+    .nk-header-group h1 {
+      font-size: 24px;
+    }
+
+    .nk-header-group p {
+      font-size: 14px;
+    }
+
+    .nk-payment-card {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+    }
+
+    .nk-card-details {
+      width: 100%;
+    }
+
+    .nk-add-btn {
+      font-size: 14px;
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nk-profile-container {
+      margin: 30px auto;
+      padding: 0 8px;
+    }
+
+    .nk-menu a {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    .nk-header-group h1 {
+      font-size: 20px;
+    }
+
+    .nk-card-details i {
+      font-size: 24px;
+    }
+
+    .nk-card-text .card-name {
+      font-size: 14px;
+    }
+
+    .nk-card-text .card-expiry {
+      font-size: 12px;
+    }
+  }
 </style>
 {% endblock %} {% block content %}
 <div class="nk-profile-container">
@@ -153,7 +241,8 @@
 
     <div class="nk-cards-list">
       {% if methods %}
-      <form method="post" action="{% url 'checkout_confirm' %}">
+      {% if cart_has_items %}
+      <form method="post" action="{% url 'checkout_address' %}">
         {% csrf_token %} {% for card in methods %}
         <label class="nk-payment-card" style="cursor: pointer">
           <input
@@ -190,6 +279,25 @@
           </button>
         </div>
       </form>
+      {% else %}
+      {% for card in methods %}
+      <label class="nk-payment-card" style="cursor: default">
+        <div class="nk-card-details">
+          <i class="bi bi-credit-card"></i>
+          <div class="nk-card-text">
+            <div class="card-name">{{ card.card_type|title }} ending in {{ card.card_number_last4 }}</div>
+            <div class="card-expiry">Expires {{ card.expiry_date }}</div>
+          </div>
+        </div>
+        {% if card.is_default %}
+        <span class="default-badge">Default</span>
+        {% endif %}
+      </label>
+      {% endfor %}
+      <div style="margin-top: 18px; text-align: right">
+        <a href="{% url 'cart_page' %}" class="btn btn-outline-secondary">View Cart</a>
+      </div>
+      {% endif %}
       {% else %}
       <p class="text-muted">No saved payment methods yet.</p>
       <a href="{% url 'add_payment_method' %}" class="nk-add-btn">

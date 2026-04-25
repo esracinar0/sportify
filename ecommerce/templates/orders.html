@@ -100,6 +100,95 @@
     .nk-profile-container {
       flex-direction: column;
       gap: 40px;
+      margin: 40px auto;
+      padding: 0 12px;
+    }
+
+    .nk-sidebar {
+      width: 100%;
+    }
+
+    .nk-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nk-menu li {
+      margin-bottom: 0;
+    }
+
+    .nk-menu a {
+      font-size: 14px;
+      padding: 8px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .nk-menu a.active {
+      background: var(--nk-black);
+      color: #fff;
+      border-color: var(--nk-black);
+    }
+
+    .nk-content h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+
+    .order-card {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .order-header {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .d-flex {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-nk-outline {
+      width: 100%;
+      text-align: center;
+      padding: 12px 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nk-profile-container {
+      margin: 30px auto;
+      padding: 0 8px;
+    }
+
+    .nk-menu a {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    .nk-content h1 {
+      font-size: 20px;
+    }
+
+    .order-label {
+      font-size: 12px;
+    }
+
+    .order-value {
+      font-size: 14px;
+    }
+
+    .order-status {
+      font-size: 12px;
+    }
+
+    .btn-nk-outline {
+      font-size: 12px;
+      padding: 10px 12px;
     }
   }
 </style>
@@ -147,7 +236,7 @@
             {% elif order.status == 'cancelled' %}<span class="text-danger">Cancelled</span>
             {% else %}{{ order.get_status_display }}{% endif %}
           </div>
-          <a href="#" class="btn-nk-outline">View Details</a>
+          <a href="{% url 'order_detail' order.id %}" class="btn-nk-outline">View Details</a>
         </div>
       </div>
       {% endfor %}

@@ -235,13 +235,198 @@
   }
 
   @media (max-width: 768px) {
-    .hero        { padding: 60px 24px; }
-    .hero::after { display: none; }
-    .stats-bar   { padding: 28px 24px; grid-template-columns: 1fr; gap: 24px; }
-    .stat-item   { border-right: none; border-bottom: 1px solid #222; padding-bottom: 24px; }
-    .categories  { padding: 60px 24px; }
-    .cat-grid    { grid-template-columns: 1fr; }
-    .sp-footer   { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
+    .hero {
+      padding: 40px 16px;
+      min-height: 70vh;
+    }
+
+    .hero::after {
+      display: none;
+    }
+
+    .hero-content {
+      max-width: 100%;
+    }
+
+    .hero-title {
+      font-size: clamp(32px, 5vw, 48px);
+      margin-bottom: 20px;
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .hero-actions {
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      padding: 12px 28px;
+      font-size: 11px;
+    }
+
+    .stats-bar {
+      padding: 24px 16px;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .stat-item {
+      border-right: none;
+      border-bottom: 1px solid #222;
+      padding-bottom: 24px;
+      padding: 0;
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-number {
+      font-size: 28px;
+    }
+
+    .categories {
+      padding: 40px 16px;
+    }
+
+    .section-header {
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 28px;
+    }
+
+    .cat-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .cat-card {
+      padding: 32px 24px;
+    }
+
+    .cat-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .cat-name {
+      font-size: 18px;
+    }
+
+    .sp-footer {
+      padding: 32px 16px;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero {
+      padding: 30px 12px;
+      min-height: 60vh;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px;
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow::before {
+      width: 24px;
+      height: 1.5px;
+    }
+
+    .hero-title {
+      font-size: clamp(24px, 4vw, 32px);
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-hero-primary {
+      width: 100%;
+      text-align: center;
+      padding: 12px 20px;
+      font-size: 10px;
+    }
+
+    .btn-hero-ghost {
+      font-size: 11px;
+      width: 100%;
+    }
+
+    .stat-number {
+      font-size: 24px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+    }
+
+    .categories {
+      padding: 30px 12px;
+    }
+
+    .section-title {
+      font-size: 20px;
+    }
+
+    .section-link {
+      font-size: 11px;
+    }
+
+    .cat-card {
+      padding: 24px 16px;
+    }
+
+    .cat-icon {
+      font-size: 24px;
+    }
+
+    .cat-name {
+      font-size: 14px;
+    }
+
+    .cat-count {
+      font-size: 11px;
+    }
+
+    .cat-arrow {
+      font-size: 18px;
+      bottom: 16px;
+      right: 16px;
+    }
+
+    .sp-footer {
+      padding: 24px 12px;
+      font-size: 14px;
+    }
+
+    .footer-copy {
+      font-size: 11px;
+    }
   }
 </style>
 {% endblock %}

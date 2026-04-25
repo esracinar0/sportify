@@ -31,6 +31,107 @@
   .nk-item-label { font-size: 16px; font-weight: 500; }
   .nk-item-value { font-size: 14px; color: var(--nk-gray); }
   .nk-item-icon { font-size: 20px; color: var(--nk-black); }
+
+  @media (max-width: 768px) {
+    .nk-profile-container {
+      flex-direction: column;
+      gap: 40px;
+      margin: 40px auto;
+      padding: 0 12px;
+    }
+
+    .nk-sidebar {
+      width: 100%;
+    }
+
+    .nk-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nk-menu li {
+      margin-bottom: 0;
+    }
+
+    .nk-menu a {
+      font-size: 14px;
+      padding: 8px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .nk-menu a.active {
+      background: var(--nk-black);
+      color: #fff;
+      border-color: var(--nk-black);
+    }
+
+    .nk-dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .nk-dashboard-header h1 {
+      font-size: 24px;
+    }
+
+    .nk-avatar-large {
+      width: 80px;
+      height: 80px;
+      font-size: 32px;
+    }
+
+    .nk-list-item {
+      padding: 16px 0;
+    }
+
+    .nk-item-label {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nk-profile-container {
+      margin: 30px auto;
+      padding: 0 8px;
+    }
+
+    .nk-menu a {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    .nk-dashboard-header h1 {
+      font-size: 20px;
+    }
+
+    .nk-avatar-large {
+      width: 70px;
+      height: 70px;
+      font-size: 28px;
+    }
+
+    .nk-member-since {
+      font-size: 14px;
+    }
+
+    .nk-list-item {
+      padding: 12px 0;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .nk-item-label {
+      font-size: 13px;
+    }
+
+    .nk-item-value {
+      font-size: 12px;
+    }
+  }
 </style>
 {% endblock %}
 

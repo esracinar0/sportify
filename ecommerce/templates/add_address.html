@@ -2,6 +2,64 @@
 {% block title %}Add Address — Sportify{% endblock %}
 
 {% block content %}
+<style>
+  @media (max-width: 768px) {
+    .container {
+      margin-top: 40px !important;
+      padding: 0 12px !important;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 32px !important;
+    }
+
+    .form-label {
+      font-size: 12px;
+    }
+
+    .form-control {
+      font-size: 14px;
+      padding: 10px 14px !important;
+    }
+
+    .row .col-6 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    .btn {
+      font-size: 14px;
+      padding: 12px 20px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      margin-top: 30px !important;
+      padding: 0 8px !important;
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    .form-label {
+      font-size: 11px;
+      margin-bottom: 4px !important;
+    }
+
+    .mb-4 {
+      margin-bottom: 16px !important;
+    }
+
+    .form-control {
+      font-size: 13px;
+      padding: 8px 12px !important;
+    }
+  }
+</style>
+
 <div class="container mt-5">
     <div style="max-width: 500px; margin: auto;">
         <a href="{% url 'addresses' %}" class="text-dark text-decoration-none d-block mb-4">
@@ -43,4 +101,3 @@
         </form>
     </div>
 </div>
-{% endblock %}

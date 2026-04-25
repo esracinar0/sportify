@@ -2,6 +2,55 @@
 {% block title %}Notification Settings — Sportify{% endblock %}
 
 {% block content %}
+<style>
+  @media (max-width: 768px) {
+    .container {
+      margin-top: 40px !important;
+      padding: 0 12px !important;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 16px !important;
+    }
+
+    p {
+      font-size: 14px;
+    }
+
+    .form-check-label {
+      font-size: 14px !important;
+    }
+
+    .btn {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      margin-top: 30px !important;
+      padding: 0 8px !important;
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 13px;
+    }
+
+    .form-check-label {
+      font-size: 13px !important;
+    }
+
+    .text-muted.small {
+      font-size: 11px;
+    }
+  }
+</style>
+
 <div class="container mt-5">
   <div style="max-width: 500px; margin: auto;">
     
@@ -41,4 +90,3 @@
     </form>
   </div>
 </div>
-{% endblock %}
