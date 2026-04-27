@@ -217,6 +217,22 @@ SPORTIFY{% endblock %} {% block extra_css %}
     font-weight: 900;
     color: #E8000D;
     margin: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .original-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 600;
+  }
+
+  .discounted-price {
+    font-size: 18px;
+    font-weight: 900;
+    color: #E8000D;
   }
 
   /* Empty State */
@@ -400,7 +416,14 @@ SPORTIFY{% endblock %} {% block extra_css %}
       <div class="product-info">
         <div class="brand-name">{{ shoe.brand.name }}</div>
         <h3 class="product-name">{{ shoe.name }}</h3>
-        <div class="product-price">${{ shoe.price }}</div>
+        <div class="product-price">
+          {% if shoe.discount_percent > 0 %}
+            <span class="original-price">${{ shoe.price }}</span>
+            <span class="discounted-price">${{ shoe.discounted_price }}</span>
+          {% else %}
+            <span class="discounted-price">${{ shoe.price }}</span>
+          {% endif %}
+        </div>
       </div>
     </article>
     {% endwith %} {% endfor %}
