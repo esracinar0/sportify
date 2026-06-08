@@ -1,0 +1,8 @@
+# Email Configuration for Password Reset
+EMAIL_HOST_USER=sportify.support@gmail.com
+EMAIL_HOST_PASSWORD=fbgs hsvp fcdg stoh
+DEFAULT_FROM_EMAIL=sportify.support@gmail.com
+
+# Django (optional)
+# SECRET_KEY=your-secret-key-here
+# DEBUG=True

@@ -53,6 +53,10 @@
     gap: 24px;
   }
   
+  .fav-card-wrapper {
+    position: relative;
+  }
+  
   .fav-card {
     text-decoration: none;
     color: var(--nk-black);
@@ -90,6 +94,31 @@
   .fav-card-price {
     font-size: 16px;
     font-weight: 600;
+  }
+
+  /* Remove Button */
+  .fav-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(232, 0, 13, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+
+  .fav-remove-btn:hover {
+    background: rgba(232, 0, 13, 1);
+    transform: scale(1.1);
   }
 
   @media (max-width: 768px) {
@@ -196,12 +225,10 @@
   
   <div class="nk-sidebar">
     <ul class="nk-menu">
-      <li><a href="#">Profile</a></li>
+      <li><a href="{% url 'profile' %}">Profile</a></li>
       <li><a href="{% url 'orders' %}">Orders</a></li>
       <li><a href="{% url 'favorites' %}" class="active">Favorites</a></li>
-      <li><a href="#">Inbox</a></li>
-      <li><a href="#">Experiences</a></li>
-      <li><a href="{% url 'profile' %}">Account Settings</a></li>
+      <li><a href="{% url 'account_details' %}">Account Settings</a></li>
       <li><a href="{% url 'logout' %}">Log Out</a></li>
     </ul>
   </div>
@@ -209,21 +236,36 @@
   <div class="nk-content">
     <h1>Favorites</h1>
     
-    {% if favorites %}
+    {% if favorites_info %}
       <div class="fav-grid">
-        {% for fav in favorites %}
-        <a href="{% url 'product_detail' fav.product.pk %}" class="fav-card">
-          
-          {% if fav.product.images.first %}
-            <img src="{{ fav.product.images.first.get_url }}" class="fav-card-image" alt="{{ fav.product.name }}">
-          {% else %}
-            <div class="fav-card-image d-flex align-items-center justify-content-center text-muted">No Image</div>
-          {% endif %}
-          
-          <div class="fav-card-brand">{{ fav.product.brand.name }}</div>
-          <div class="fav-card-title">{{ fav.product.name }}</div>
-          <div class="fav-card-price">${{ fav.product.price }}</div>
-        </a>
+        {% for item in favorites_info %}
+          <div class="fav-card-wrapper">
+            <button 
+              class="fav-remove-btn" 
+              data-product-id="{{ item.product.id }}" 
+              onclick="removeFavorite(event, {{ item.product.id }})"
+              title="Remove from favorites"
+            >
+              ✕
+            </button>
+            <a href="{% url 'product_detail' item.product.id %}" class="fav-card">
+              {% if item.image_url %}
+                <img src="{{ item.image_url }}" alt="{{ item.product.name }}" class="fav-card-image">
+              {% else %}
+                <div class="fav-card-image" style="display: flex; align-items: center; justify-content: center; background: #e9ecef;">
+                  <span class="text-muted">No image</span>
+                </div>
+              {% endif %}
+              <div class="fav-card-brand">{{ item.product.brand.name }}</div>
+              <div class="fav-card-title">{{ item.product.name }}</div>
+              {% if item.product.discount_percent %}
+                <span class="text-decoration-line-through text-muted">${{ item.product.price }}</span>
+                <div class="fav-card-price text-danger">${{ item.product.discounted_price }}</div>
+              {% else %}
+                <div class="fav-card-price">${{ item.product.price }}</div>
+              {% endif %}
+            </a>
+          </div>
         {% endfor %}
       </div>
     {% else %}
@@ -235,4 +277,43 @@
 
   </div>
 </div>
+
+<script>
+  function removeFavorite(event, productId) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (confirm('Remove from favorites?')) {
+      fetch(`/accounts/wishlist/remove/${productId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          location.reload();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
 {% endblock %}

@@ -272,6 +272,11 @@
     color: #fff;
   }
 
+  .btn-favorite.active {
+    background: #E8000D;
+    color: #fff;
+  }
+
   /* Reviews Section */
   .reviews-section {
     border-top: 1px solid #e5e5e5;
@@ -437,7 +442,14 @@
     <!-- Info Section -->
     <div class="info-section">
       <div class="detail-header">
-        <div class="detail-brand">{{ product.brand.name }}</div>
+        <div class="detail-brand">
+          {{ product.brand.name }}
+          {% if product.company %}
+              <span style="color: #999; margin-left: 10px; font-weight: 500;">
+                  | SELLER: <span style="color: #333;">{{ product.company.username }}</span>
+              </span>
+          {% endif %}
+        </div>
         <h1 class="detail-title">{{ product.name }}</h1>
         <p class="detail-category">{{ product.get_gender_display|default:product.gender }}</p>
       </div>
@@ -481,9 +493,15 @@
 
         <div class="action-buttons">
           <button type="submit" class="btn-add-cart">Add to Cart</button>
-          <button type="button" class="btn-favorite">♥ Favorite</button>
+          <button type="button" class="btn-favorite" id="favorite-btn" data-product-id="{{ product.id }}">♥ Favorite</button>
         </div>
       </form>
+
+      <!-- Return Policy Notice -->
+      <div class="return-policy-notice" style="margin-top: 30px; padding: 16px; background: #f0f7ff; border-left: 4px solid #0066cc; border-radius: 4px;">
+        <div style="font-size: 13px; color: #0066cc; font-weight: 600; margin-bottom: 4px;">✓ Easy Returns</div>
+        <div style="font-size: 14px; color: #333;">Products can be returned within 14 days after delivery for a full refund.</div>
+      </div>
 
       <!-- Reviews Section -->
       <div class="reviews-section">
@@ -505,4 +523,117 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const favoriteBtn = document.getElementById('favorite-btn');
+    const productId = favoriteBtn.dataset.productId;
+    
+    // Sayfa yüklendiğinde favorite durumunu kontrol et
+    fetch(`/accounts/wishlist/check/${productId}/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.is_favorited) {
+        favoriteBtn.classList.add('active');
+      } else {
+        favoriteBtn.classList.remove('active');
+      }
+    })
+    .catch(error => console.error('Error checking favorites:', error));
+    
+    // Favorite button click handler
+    if (favoriteBtn) {
+      favoriteBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.productId;
+        const isActive = this.classList.contains('active');
+        const url = isActive 
+          ? `/accounts/wishlist/remove/${productId}/` 
+          : `/accounts/wishlist/add/${productId}/`;
+        
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            this.classList.toggle('active');
+            showAlert(data.message);
+          } else {
+            showAlert('Please login to add favorites', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showAlert('Error updating favorites', 'error');
+        });
+      });
+    }
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function showAlert(message, type = 'success') {
+    const alert = document.createElement('div');
+    alert.className = 'sp-alert';
+    alert.textContent = message;
+    alert.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: ${type === 'error' ? '#dc3545' : '#28a745'};
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      z-index: 9999;
+      animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+      alert.style.opacity = '0';
+      alert.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => alert.remove(), 300);
+    }, 3000);
+  }
+
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+</script>
+
 {% endblock %}

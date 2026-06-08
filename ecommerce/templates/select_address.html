@@ -37,14 +37,33 @@
   {% if addresses %}
   <form method="post" action="{% url 'checkout_address' %}">
     {% csrf_token %}
-    <!-- Required documents checkboxes with modal links -->
-    <div class="form-check mb-2">
-      <input class="form-check-input" type="checkbox" id="accepted_terms" name="accepted_terms" />
-      <label class="form-check-label" for="accepted_terms">I have read and accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" onclick="event.stopPropagation();">Terms &amp; Conditions</a></label>
+    
+    <!-- Professional Return Policy Notice -->
+    <div style="margin-bottom: 24px; padding: 16px; background: #f8fafc; border-left: 4px solid #0ea5e9; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      <div style="font-size: 14px; color: #0369a1; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+        <i class="bi bi-shield-check" style="font-size: 16px;"></i> 14-Day Right of Withdrawal
+      </div>
+      <div style="font-size: 13.5px; color: #475569; line-height: 1.5;">
+        Shop with confidence. Under our standard Return Policy, you have the statutory right to return your purchase within 14 days of delivery for a full refund, provided the items are unworn and in their original packaging.
+      </div>
     </div>
-    <div class="form-check mb-4">
-      <input class="form-check-input" type="checkbox" id="accepted_policy" name="accepted_policy" />
-      <label class="form-check-label" for="accepted_policy">I have read and accept the <a href="#" data-bs-toggle="modal" data-bs-target="#policyModal" onclick="event.stopPropagation();">Consumer Rights</a></label>
+    
+    <!-- Required documents checkboxes with modal links -->
+    <div class="card mb-4 border-0 bg-light p-3">
+        <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="accepted_terms" name="accepted_terms" required />
+        <label class="form-check-label" for="accepted_terms" style="font-size: 14px; color: #333;">
+            I have read and unconditionally accept the 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" onclick="event.stopPropagation();" class="text-primary fw-bold text-decoration-none">Terms &amp; Conditions</a>
+        </label>
+        </div>
+        <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="accepted_policy" name="accepted_policy" required />
+        <label class="form-check-label" for="accepted_policy" style="font-size: 14px; color: #333;">
+            I have read and acknowledge the 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#policyModal" onclick="event.stopPropagation();" class="text-primary fw-bold text-decoration-none">Consumer Rights &amp; Return Policy</a>
+        </label>
+        </div>
     </div>
 
     <h3 style="margin-bottom: 20px; font-size: 18px; font-weight: 600;">Select Shipping Address</h3>
@@ -66,8 +85,10 @@
     </div>
   </form>
   {% else %}
-  <p class="text-muted">No saved addresses yet.</p>
-  <a href="{% url 'add_address' %}" class="btn btn-primary">Add Address</a>
+  <div class="alert alert-info border-0 mt-4">
+      <p class="mb-3">You do not have any saved delivery addresses.</p>
+      <a href="{% url 'add_address' %}" class="btn btn-primary">Add New Address</a>
+  </div>
   {% endif %}
 </div>
 
@@ -75,21 +96,33 @@
 <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Terms & Conditions</h5>
+      <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold">Terms &amp; Conditions</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <p><strong>Terms & Conditions</strong></p>
-        <p>By using this service, you agree to our terms and conditions. These terms govern your use of our website and services.</p>
-        <p>1. You must be at least 18 years old to use this service.</p>
-        <p>2. You are responsible for maintaining the confidentiality of your account credentials.</p>
-        <p>3. You agree not to engage in any activity that disrupts or interferes with the website.</p>
-        <p>4. All materials on this website are the property of Sportify and are protected by copyright law.</p>
-        <p>5. Sportify reserves the right to modify these terms at any time.</p>
+      <div class="modal-body" style="font-size: 14px; line-height: 1.7; color: #444;">
+        <p class="text-muted small mb-4">Last Updated: {% now 'F j, Y' %}</p>
+        
+        <h6 class="fw-bold mt-4 text-dark">1. Agreement to Terms</h6>
+        <p>These Terms and Conditions constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you"), and Sportify ("we", "us", or "our"), concerning your access to and use of the Sportify website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto. By accessing the site and placing an order, you agree that you have read, understood, and unconditionally agree to be bound by all of these Terms and Conditions.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">2. User Accounts and Security</h6>
+        <p>You may be required to register with the Site. You agree to keep your password confidential and will be responsible for all use of your account and password. We reserve the right to remove, reclaim, or change a username you select if we determine, in our sole discretion, that such username is inappropriate, obscene, or otherwise objectionable.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">3. Intellectual Property Rights</h6>
+        <p>Unless otherwise indicated, the Site is our proprietary property. All source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics on the Site (collectively, the "Content") and the trademarks, service marks, and logos contained therein (the "Marks") are owned or controlled by us or licensed to us, and are protected by copyright and trademark laws and various other intellectual property rights and unfair competition laws.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">4. Products and Pricing</h6>
+        <p>We make every effort to display as accurately as possible the colors, features, specifications, and details of the products available on the Site. However, we do not guarantee that the colors, features, specifications, and details of the products will be accurate, complete, reliable, current, or free of other errors. All pricing is subject to change without prior notice. We reserve the right to refuse or cancel any orders placed for products listed at an incorrect price.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">5. Limitation of Liability</h6>
+        <p>In no event will we or our directors, employees, or agents be liable to you or any third party for any direct, indirect, consequential, exemplary, incidental, special, or punitive damages, including lost profit, lost revenue, loss of data, or other damages arising from your use of the site, even if we have been advised of the possibility of such damages.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">6. Governing Law</h6>
+        <p>These Terms shall be governed by and defined following the laws of our operating jurisdiction. Sportify and yourself irrevocably consent that the courts of the applicable jurisdiction shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.</p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -99,23 +132,32 @@
 <div class="modal fade" id="policyModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Consumer Rights</h5>
+      <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold">Consumer Rights &amp; Return Policy</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <p><strong>Consumer Rights & Protection</strong></p>
-        <p>As a consumer, you have the following rights when purchasing from our store:</p>
-        <p>1. Right to accurate product information - We commit to providing clear, honest descriptions of all products.</p>
-        <p>2. Right to a 14-day refund period - You can return products within 14 days if you change your mind, provided they are unused.</p>
-        <p>3. Right to protection against defective goods - If a product is faulty, you have the right to a refund or replacement.</p>
-        <p>4. Right to privacy - Your personal information will not be shared with third parties without consent.</p>
-        <p>5. Right to fair pricing - Prices are clearly displayed before checkout.</p>
-        <p>6. Right to secure payment - We use industry-standard encryption to protect your payment information.</p>
-        <p>For disputes, please contact our customer service team.</p>
+      <div class="modal-body" style="font-size: 14px; line-height: 1.7; color: #444;">
+        <p class="text-muted small mb-4">Effective Date: {% now 'F j, Y' %}</p>
+
+        <h6 class="fw-bold mt-4 text-dark">1. Right of Withdrawal (14-Day Return Policy)</h6>
+        <p>In accordance with applicable distance selling regulations and consumer protection laws, you have the right to withdraw from this contract within fourteen (14) days without giving any reason. The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the goods.</p>
+        <p>To exercise the right of withdrawal, you must inform us of your decision to withdraw from this contract by an unequivocal statement (e.g., a formal letter sent by post or e-mail via our Customer Service portal). You may use the standard return form available on your account dashboard, but it is not obligatory.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">2. Conditions for Returns</h6>
+        <p>To be eligible for a return and full refund, your item must be unused, unworn, and in the exact same condition that you received it. It must also be in the original packaging with all tags, labels, and protective materials attached. Items that show signs of wear, damage, alteration, or missing components will be rejected and returned to the sender at their own expense.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">3. Effects of Withdrawal and Refunds</h6>
+        <p>If you withdraw from this contract, we shall reimburse to you all payments received from you, including the costs of standard delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and in any event not later than 14 days from the day on which we are formally informed about your decision to withdraw.</p>
+        <p>We will carry out such reimbursement using the same means of payment as you used for the initial transaction. We reserve the right to withhold reimbursement until we have received the goods back or you have supplied verifiable evidence of having sent back the goods, whichever is the earliest.</p>
+
+        <h6 class="fw-bold mt-4 text-dark">4. Defective Goods and Statutory Guarantee</h6>
+        <p>Under statutory consumer protection laws, we are under a legal duty to supply products that are in strict conformity with this contract. If a product you purchase is defective, incorrectly described, or not fit for purpose upon delivery, you are entitled to a repair, a replacement, or a full refund. This legal guarantee applies irrespective of the commercial 14-day withdrawal right mentioned above.</p>
+        
+        <h6 class="fw-bold mt-4 text-dark">5. Privacy and Data Protection</h6>
+        <p>Your privacy is of utmost importance to us. Any personal information collected during the purchase process, including your delivery address and payment details, will be processed strictly in accordance with our Privacy Policy and relevant Data Protection Regulations (such as GDPR). We will never sell or unlawfully distribute your data to third parties.</p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

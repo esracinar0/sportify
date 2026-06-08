@@ -439,11 +439,6 @@
   </head>
   <body>
     <div class="nk-top-bar">
-      <a href="#">Find a Store</a>
-      <span class="divider">|</span>
-      <a href="#">Help</a>
-      <span class="divider">|</span>
-
       {% if request.user.is_authenticated %}
       <div class="dropdown">
         <a
@@ -464,10 +459,12 @@
           <a class="nk-dropdown-item" href="{% url 'profile' %}">Profile</a>
           <a class="nk-dropdown-item" href="{% url 'orders' %}">Orders</a>
           <a class="nk-dropdown-item" href="{% url 'favorites' %}">Favorites</a>
-          <a class="nk-dropdown-item" href="#">Experiences</a>
-          <a class="nk-dropdown-item" href="{% url 'account_details' %}"
-            >Account Settings</a
-          >
+          <a class="nk-dropdown-item" href="{% url 'account_details' %}">Account Settings</a>
+          
+          {% if request.user.profile.role == 'company' %}
+          <a class="nk-dropdown-item" href="{% url 'company_dashboard' %}" style="color: #4ade80 !important;">🏢 Company Dashboard</a>
+          {% endif %}
+
           <a
             class="nk-dropdown-item"
             style="margin-top: 16px"
@@ -487,11 +484,10 @@
       <a href="{% url 'home' %}" class="nk-logo">SPORTIFY</a>
 
       <div class="nk-center-links">
-        <a href="#">New</a>
-        <a href="#">Men</a>
-        <a href="#">Women</a>
-        <a href="#">Kids</a>
-        <a href="{% url 'shoes' %}">Sport</a>
+        <a href="{% url 'category_page' 'men' %}">Men</a>
+        <a href="{% url 'category_page' 'women' %}">Women</a>
+        <a href="{% url 'category_page' 'kids' %}">Kids</a>
+        <a href="{% url 'category_page' 'sport' %}">Sport</a>
       </div>
 
       <div class="nk-right-icons">
@@ -515,11 +511,13 @@
           ></div>
         </div>
         <a href="#" id="search-toggle"><i class="bi bi-search"></i></a>
+        <a href="{% url 'favorites' %}" id="favorites-button" title="Favorites"
+          ><i class="bi bi-heart"></i
+        ></a>
         <a href="{% url 'cart_page' %}" id="cart-button"
           ><i class="bi bi-bag"></i
         ></a>
       </div>
-      <!-- Mobile hamburger -->
       <button
         id="nk-hamburger"
         aria-label="Menu"
@@ -529,7 +527,6 @@
       </button>
     </nav>
 
-    <!-- Mobile menu (hidden by default) -->
     <div id="nk-mobile-menu">
       <div class="nk-mobile-menu-header">
         <a href="{% url 'home' %}" class="nk-logo">SPORTIFY</a>
@@ -539,11 +536,10 @@
       </div>
 
       <div class="nk-mobile-links">
-        <a href="#">New</a>
-        <a href="#">Men</a>
-        <a href="#">Women</a>
-        <a href="#">Kids</a>
-        <a href="{% url 'shoes' %}">Sport</a>
+        <a href="{% url 'category_page' 'men' %}">Men</a>
+        <a href="{% url 'category_page' 'women' %}">Women</a>
+        <a href="{% url 'category_page' 'kids' %}">Kids</a>
+        <a href="{% url 'category_page' 'sport' %}">Sport</a>
       </div>
 
       <div class="nk-mobile-menu-divider"></div>
@@ -561,6 +557,11 @@
       <a href="{% url 'orders' %}" style="padding: 8px 0; color: var(--nk-black); text-decoration: none;">Orders</a>
       <a href="{% url 'favorites' %}" style="padding: 8px 0; color: var(--nk-black); text-decoration: none;">Favorites</a>
       <a href="{% url 'account_details' %}" style="padding: 8px 0; color: var(--nk-black); text-decoration: none;">Settings</a>
+      
+      {% if request.user.profile.role == 'company' %}
+      <a href="{% url 'company_dashboard' %}" style="padding: 8px 0; color: #28a745; font-weight: bold; text-decoration: none;">🏢 Company Dashboard</a>
+      {% endif %}
+
       <a href="{% url 'logout' %}" style="padding: 8px 0; color: var(--nk-black); text-decoration: none;">Log Out</a>
       {% else %}
       <a href="{% url 'register' %}" style="padding: 8px 0; color: var(--nk-black); text-decoration: none;">Join Us</a>
@@ -574,7 +575,8 @@
       <div class="sp-alert">{{ message }}</div>
       {% endfor %}
     </div>
-    {% endif %} {% block content %}{% endblock %}
+    {% endif %}
+    {% block content %}{% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -661,6 +663,17 @@
             }, 250);
           });
 
+        // Handle Enter key to go to full search page
+        input &&
+          input.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              const q = this.value.trim();
+              if (q) {
+                window.location.href = "/accounts/search/?q=" + encodeURIComponent(q);
+              }
+            }
+          });
+
         // Close on outside click
         document.addEventListener("click", function (ev) {
           if (
@@ -701,5 +714,39 @@
       })();
     </script>
     {% endblock %}
+    
+    <footer style="background: #f8f9fa; border-top: 1px solid #e5e5e5; margin-top: 60px; padding: 40px 0 20px;">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md-4 mb-4">
+            <h6 style="font-weight: 600; margin-bottom: 16px;">About Sportify</h6>
+            <p style="font-size: 14px; color: #666;">Your trusted destination for quality athletic shoes and gear.</p>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <h6 style="font-weight: 600; margin-bottom: 16px;">Customer Service</h6>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li><a href="{% url 'privacy' %}" style="text-decoration: none; color: #666; font-size: 14px;">Privacy Policy</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <h6 style="font-weight: 600; margin-bottom: 16px;">Shopping</h6>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li><a href="{% url 'shoes' %}" style="text-decoration: none; color: #666; font-size: 14px;">All Products</a></li>
+              <li><a href="{% url 'category_page' 'men' %}" style="text-decoration: none; color: #666; font-size: 14px;">Men's Shoes</a></li>
+              <li><a href="{% url 'category_page' 'women' %}" style="text-decoration: none; color: #666; font-size: 14px;">Women's Shoes</a></li>
+              <li><a href="{% url 'category_page' 'kids' %}" style="text-decoration: none; color: #666; font-size: 14px;">Kids' Shoes</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <hr style="margin: 30px 0; border-color: #ddd;">
+        
+        <div style="text-align: center; color: #999; font-size: 13px;">
+          <p>&copy; {% now 'Y' %} Sportify. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

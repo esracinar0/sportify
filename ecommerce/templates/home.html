@@ -16,21 +16,6 @@
     overflow: hidden;
   }
 
-  /* .hero::after {
-    content: 'SPORTIFY';
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 220px;
-    font-weight: 900;
-    color: null;
-    letter-spacing: -8px;
-    line-height: 1;
-    pointer-events: none;
-    user-select: none;
-  } */
-
   .hero-content {
     max-width: 600px;
     position: relative;
@@ -140,78 +125,6 @@
     margin-top: 4px;
   }
 
-  /* ── CATEGORIES ── */
-  .categories {
-    padding: 100px 80px;
-    background: #fff;
-  }
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 48px;
-  }
-  .section-title {
-    font-size: 36px;
-    font-weight: 900;
-    letter-spacing: -1px;
-    text-transform: uppercase;
-  }
-  .section-link {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: #0a0a0a;
-    text-decoration: none;
-    border-bottom: 1.5px solid #0a0a0a;
-    padding-bottom: 2px;
-  }
-  .section-link:hover { color: #E8000D; border-color: #E8000D; }
-
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  .cat-card {
-    background: #f8f8f8;
-    padding: 48px 32px;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .cat-card:hover { background: #0a0a0a; transform: translateY(-2px); }
-  .cat-card:hover .cat-name  { color: #fff; }
-  .cat-card:hover .cat-count { color: #E8000D; }
-  .cat-card:hover .cat-arrow { color: #E8000D; }
-
-  .cat-icon { font-size: 32px; margin-bottom: 20px; }
-  .cat-name {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .cat-count {
-    font-size: 12px;
-    color: #aaa;
-    margin-top: 6px;
-    letter-spacing: 0.5px;
-    transition: color 0.2s;
-  }
-  .cat-arrow {
-    position: absolute;
-    bottom: 32px;
-    right: 32px;
-    font-size: 22px;
-    color: #ccc;
-    transition: color 0.2s;
-  }
-
   /* ── FOOTER ── */
   .sp-footer {
     background: #0a0a0a;
@@ -238,10 +151,6 @@
     .hero {
       padding: 40px 16px;
       min-height: 70vh;
-    }
-
-    .hero::after {
-      display: none;
     }
 
     .hero-content {
@@ -287,38 +196,6 @@
 
     .stat-number {
       font-size: 28px;
-    }
-
-    .categories {
-      padding: 40px 16px;
-    }
-
-    .section-header {
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .section-title {
-      font-size: 28px;
-    }
-
-    .cat-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
-    .cat-card {
-      padding: 32px 24px;
-    }
-
-    .cat-icon {
-      font-size: 28px;
-      margin-bottom: 16px;
-    }
-
-    .cat-name {
-      font-size: 18px;
     }
 
     .sp-footer {
@@ -385,40 +262,6 @@
       font-size: 10px;
     }
 
-    .categories {
-      padding: 30px 12px;
-    }
-
-    .section-title {
-      font-size: 20px;
-    }
-
-    .section-link {
-      font-size: 11px;
-    }
-
-    .cat-card {
-      padding: 24px 16px;
-    }
-
-    .cat-icon {
-      font-size: 24px;
-    }
-
-    .cat-name {
-      font-size: 14px;
-    }
-
-    .cat-count {
-      font-size: 11px;
-    }
-
-    .cat-arrow {
-      font-size: 18px;
-      bottom: 16px;
-      right: 16px;
-    }
-
     .sp-footer {
       padding: 24px 12px;
       font-size: 14px;
@@ -436,7 +279,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-eyebrow">New Season 2025</div>
+    <div class="hero-eyebrow">New Season 2026</div>
     <h1 class="hero-title">
       Built for<br><span>Champions.</span>
     </h1>
@@ -466,38 +309,10 @@
   </div>
 </div>
 
-<!-- CATEGORIES -->
-<section class="categories">
-  <div class="section-header">
-    <h2 class="section-title">Shop by Sport</h2>
-    <a href="#" class="section-link">All Categories →</a>
-  </div>
-  <div class="cat-grid">
-    <div class="cat-card">
-      <div class="cat-icon">🏃</div>
-      <div class="cat-name">Running</div>
-      <div class="cat-count">48 products</div>
-      <div class="cat-arrow">→</div>
-    </div>
-    <div class="cat-card">
-      <div class="cat-icon">⚽</div>
-      <div class="cat-name">Football</div>
-      <div class="cat-count">36 products</div>
-      <div class="cat-arrow">→</div>
-    </div>
-    <div class="cat-card">
-      <div class="cat-icon">🏀</div>
-      <div class="cat-name">Basketball</div>
-      <div class="cat-count">29 products</div>
-      <div class="cat-arrow">→</div>
-    </div>
-  </div>
-</section>
-
 <!-- FOOTER -->
 <footer class="sp-footer">
   <div class="footer-logo">Sport<span>ify</span></div>
-  <div class="footer-copy">© 2025 Sportify. All rights reserved.</div>
+  <div class="footer-copy">© 2026 Sportify. All rights reserved.</div>
 </footer>
 
 {% endblock %}

@@ -51,20 +51,27 @@ class Product(models.Model):
 
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name="products")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
-    name = models.CharField(max_length=255)
+    company = models.ForeignKey(User, on_delete=models.CASCADE, related_name="company_products", null=True, blank=True, help_text="Company/Seller who owns this product")
+    name = models.CharField(max_length=255, db_index=True)
     slug = models.SlugField(max_length=300, unique=True, blank=True)
     description = models.TextField(blank=True)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, db_index=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_percent = models.PositiveIntegerField(default=0)
     material = models.CharField(max_length=100, blank=True)
     is_featured = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ("-created_at",)
+        indexes = [
+            models.Index(fields=['name', 'is_active']),
+            models.Index(fields=['gender', 'is_active']),
+            models.Index(fields=['brand', 'is_active']),
+            models.Index(fields=['category', 'is_active']),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -196,8 +203,13 @@ class OrderItem(models.Model):
 
 class UserProfile(models.Model):
     GENDER_CHOICES = [('male', 'Male'), ('female', 'Female'), ('other', 'Other')]
+    ROLE_CHOICES = [
+        ('customer', 'Customer'),
+        ('company', 'Company/Seller'),
+    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)

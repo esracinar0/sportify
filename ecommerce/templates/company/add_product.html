@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Add New Product</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'company_dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post" class="card p-4" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="name" class="form-label">Product Name *</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Product Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    <div class="form-text">Upload a product image (JPG, PNG, GIF). Max size: 5MB</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="brand" class="form-label">Brand *</label>
+                        <select class="form-select" id="brand" name="brand" required>
+                            <option value="">Select a brand</option>
+                            {% for brand in brands %}
+                                <option value="{{ brand.id }}">{{ brand.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">Select a category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="gender" class="form-label">Gender *</label>
+                        <select class="form-select" id="gender" name="gender" required>
+                            <option value="">Select gender</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="kids">Kids</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="price" class="form-label">Price ($) *</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="discount_percent" class="form-label">Discount (%)</label>
+                        <input type="number" class="form-control" id="discount_percent" name="discount_percent" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="material" class="form-label">Material</label>
+                        <input type="text" class="form-control" id="material" name="material" placeholder="e.g., Leather, Mesh, Synthetic">
+                    </div>
+                </div>
+<div class="card bg-light mb-4 border-0">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Variants (Color, Sizes & Stock)</h5>
+                        
+                        <div class="mb-3">
+                            <label for="color" class="form-label">Shoe Color *</label>
+                            <input type="text" class="form-control" id="color" name="color" placeholder="e.g., Black, White, Red" required>
+                        </div>
+
+                        <label class="form-label">Available Sizes & Stock Quantity *</label>
+                        <div class="row g-2">
+                            {% for size in all_sizes %}
+                            <div class="col-md-3 col-6">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-text bg-white border-end-0">
+                                        <input class="form-check-input mt-0 size-checkbox" type="checkbox" name="sizes" value="{{ size }}" id="size_{{ size }}" onchange="toggleStock(this, 'stock_{{ size }}')">
+                                        <label class="ms-2 mb-0 fw-bold" style="cursor: pointer;" for="size_{{ size }}">{{ size }}</label>
+                                    </div>
+                                    <input type="number" class="form-control border-start-0 text-center" name="stock_{{ size }}" id="stock_{{ size }}" placeholder="Stock" min="0" disabled required style="background-color: #f8f9fa;">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-text mt-2"><i class="bi bi-info-circle"></i> Check the box to enable a size, then enter the stock quantity.</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe your product..."></textarea>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Add Product</button>
+                    <a href="{% url 'company_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Tips for adding products</h5>
+                    <ul class="card-text small">
+                        <li>Use clear, descriptive product names</li>
+                        <li>Upload high-quality images</li>
+                        <li>Set competitive prices</li>
+                        <li>Add detailed descriptions</li>
+                        <li>Choose the correct category</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 15px;
+        }
+        .card {
+            padding: 1.5rem !important;
+        }
+        h1 {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+
+<script>
+    function toggleStock(checkbox, stockInputId) {
+        const stockInput = document.getElementById(stockInputId);
+        if (checkbox.checked) {
+            stockInput.disabled = false;
+            stockInput.style.backgroundColor = "#ffffff";
+            stockInput.focus();
+        } else {
+            stockInput.disabled = true;
+            stockInput.value = '';
+            stockInput.style.backgroundColor = "#f8f9fa";
+        }
+    }
+</script>
+{% endblock %}

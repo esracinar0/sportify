@@ -5,8 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from .models import Product, UserProfile, Favorite, Order, Address, PaymentMethod, CartItem, Brand, ProductVariant, OrderItem
+from .models import Product, UserProfile, Favorite, Order, Address, PaymentMethod, CartItem, Brand, ProductVariant, OrderItem, Category, ProductImage
 from .forms import LoginForm, RegisterForm, UserUpdateForm, UserProfileForm, CustomPasswordResetForm, CustomSetPasswordForm
+import uuid
 
 # --- GENERAL VIEWS ---
 
@@ -33,6 +34,164 @@ def shoes_view(request):
         'brands': brands,
         'selected_brands': selected_brands,
     })
+
+
+# views.py içerisindeki mevcut category_page ve search_page fonksiyonlarını bunlarla değiştirin:
+
+def category_page(request, category_slug):
+    """Renders products filtered by gender, category, brand, size and sorting."""
+    # 1. Cinsiyet Kategorisi Eşleştirme
+    gender_map = {
+        'men': 'men',
+        'women': 'women',
+        'kids': 'kids',
+        'sport': 'men',
+    }
+    gender = gender_map.get(category_slug)
+    if not gender:
+        return redirect('shoes') # 'shoes_view' yerine 'shoes' (url name'ine göre)
+    
+    # 2. Ürünleri Başlangıçta Filtrele
+    products = Product.objects.filter(is_active=True, gender=gender)
+    
+    # 3. Requestten Gelen Filtre Parametrelerini Al
+    selected_category_slug = request.GET.get('category') # URL'den gelen ek kategori filtresi
+    selected_brands = request.GET.getlist('brand')
+    selected_sizes = request.GET.getlist('size')
+    sort_by = request.GET.get('sort', 'newest')
+    
+    # 4. Kategori Filtresi (Örn: Running veya Sneakers gibi alt kategoriler)
+    if selected_category_slug:
+        products = products.filter(category__slug=selected_category_slug)
+    
+    # 5. Marka Filtresi
+    if selected_brands:
+        products = products.filter(brand__id__in=selected_brands)
+        
+    # 6. Beden ve Stok Filtresi
+    if selected_sizes:
+        products = products.filter(
+            variants__size__in=selected_sizes,
+            variants__stock__gt=0,
+            variants__is_active=True
+        ).distinct()
+        
+    # 7. Sıralama
+    if sort_by == 'price_asc':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
+    else:  # newest
+        products = products.order_by('-created_at')
+    
+    # 8. Sayfalama
+    from django.core.paginator import Paginator
+    page = request.GET.get('page', 1)
+    paginator = Paginator(products, 12)
+    try:
+        products_page = paginator.page(page)
+    except:
+        products_page = paginator.page(1)
+    
+    # 9. Filtreler için Gerekli Veriler
+    brands = Brand.objects.all().order_by('name')
+    categories = Category.objects.all() # Yeni eklenen: Tüm alt kategorileri getir
+    all_sizes = ["36", "37", "38", "39", "40", "41", "42", "43"]
+    
+    shoes_info = [
+        {'shoe': p, 'image_url': p.images.first().get_url() if p.images.first() else None}
+        for p in products_page
+    ]
+    
+    return render(request, 'category.html', {
+        'category': category_slug, # URL'deki ana cinsiyet
+        'category_filter': selected_category_slug, # Filtrede seçili olan alt kategori
+        'category_title': category_slug.title(),
+        'shoes_info': shoes_info,
+        'brands': brands,
+        'categories': categories, # Template'e gönderildi
+        'all_sizes': all_sizes,
+        'selected_brands': selected_brands,
+        'selected_sizes': selected_sizes,
+        'sort_by': sort_by,
+        'page_obj': products_page,
+        'total_results': paginator.count,
+    })
+
+
+def search_page(request):
+    """Dedicated search results page with advanced filtering."""
+    query = request.GET.get('q', '').strip()
+    category_filter = request.GET.get('category', '')
+    selected_brands = request.GET.getlist('brand')
+    selected_sizes = request.GET.getlist('size')
+    sort_by = request.GET.get('sort', 'newest')
+    
+    products = Product.objects.filter(is_active=True)
+    
+    # Arama
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | Q(brand__name__icontains=query) | Q(description__icontains=query)
+        )
+    
+    # Kategori Filtresi
+    if category_filter:
+        products = products.filter(category__slug=category_filter)
+        
+    # Marka Filtresi
+    if selected_brands:
+        products = products.filter(brand__id__in=selected_brands)
+        
+    # Beden ve Stok Filtresi
+    if selected_sizes:
+        products = products.filter(
+            variants__size__in=selected_sizes,
+            variants__stock__gt=0,
+            variants__is_active=True
+        ).distinct()
+    
+    # Sıralama
+    if sort_by == 'price_asc':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
+    else:  # newest
+        products = products.order_by('-created_at')
+    
+    # Sayfalama
+    from django.core.paginator import Paginator
+    page = request.GET.get('page', 1)
+    paginator = Paginator(products, 12)
+    try:
+        products_page = paginator.page(page)
+    except:
+        products_page = paginator.page(1)
+    
+    categories = Category.objects.all()
+    brands = Brand.objects.all().order_by('name')
+    all_sizes = ["36", "37", "38", "39", "40", "41", "42", "43"]
+    
+    shoes_info = [
+        {'shoe': p, 'image_url': p.images.first().get_url() if p.images.first() else None}
+        for p in products_page
+    ]
+    
+    context = {
+        'query': query,
+        'shoes_info': shoes_info,
+        'categories': categories,
+        'brands': brands,
+        'all_sizes': all_sizes,
+        'category_filter': category_filter,
+        'selected_brands': selected_brands,
+        'selected_sizes': selected_sizes,
+        'sort_by': sort_by,
+        'page_obj': products_page,
+        'total_results': paginator.count,
+    }
+    
+    return render(request, 'search.html', context)
 
 def product_detail(request, pk):
     """Renders the details of a single product."""
@@ -70,6 +229,7 @@ def search_api(request):
             })
 
     return JsonResponse({'results': results})
+
 
 # --- AUTHENTICATION VIEWS ---
 
@@ -277,12 +437,80 @@ def delete_address(request, addr_id):
         return redirect('checkout_address')
     return redirect('addresses')
 
-# --- USER PROFILE SECTIONS ---
+# --- USER PROFILE SECTIONS - FAVORITES/WISHLIST ---
 
 @login_required
-def favorites_view(request):
-    favorites = Favorite.objects.filter(user=request.user)
-    return render(request, 'favorites.html', {'favorites': favorites})
+def favorites_page(request):
+    """Display user's favorite products - FIXED VERSION"""
+    # Kullanıcının favorilerini al
+    favorites = Favorite.objects.filter(user=request.user).select_related(
+        'product', 'product__brand', 'product__category'
+    )
+    
+    # Her ürün için resim bilgisi hazırla
+    favorites_info = []
+    for fav in favorites:
+        image_url = None
+        if fav.product.images.first():
+            image_url = fav.product.images.first().get_url()
+        
+        favorites_info.append({
+            'product': fav.product,
+            'image_url': image_url,
+            'favorite_id': fav.id
+        })
+    
+    context = {
+        'favorites': favorites,
+        'favorites_info': favorites_info,
+    }
+    
+    return render(request, 'favorites.html', context)
+
+
+@login_required
+def add_to_wishlist(request, product_id):
+    """AJAX endpoint to add product to wishlist - FIXED"""
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        fav, created = Favorite.objects.get_or_create(user=request.user, product=product)
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'{product.name} added to wishlist',
+            'is_favorited': True
+        })
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+@login_required
+def remove_from_wishlist(request, product_id):
+    """AJAX endpoint to remove product from wishlist - FIXED"""
+    if request.method == 'POST':
+        try:
+            fav = Favorite.objects.get(user=request.user, product_id=product_id)
+            product_name = fav.product.name
+            fav.delete()
+            return JsonResponse({
+                'status': 'success',
+                'message': f'{product_name} removed from wishlist',
+                'is_favorited': False
+            })
+        except Favorite.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Not in wishlist'}, status=404)
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+@login_required
+def is_in_wishlist(request, product_id):
+    """AJAX endpoint to check if product is in wishlist"""
+    is_favorited = Favorite.objects.filter(user=request.user, product_id=product_id).exists()
+    return JsonResponse({'is_favorited': is_favorited})
+
+
+# --- ORDERS ---
 
 @login_required
 def orders_view(request):
@@ -333,10 +561,6 @@ def order_detail(request, order_id):
     return render(request, 'order_detail.html', {'order': order, 'items': items})
 
 # --- CART SECTION ---
-
-# views.py
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import ProductVariant # Make sure this matches your models file import path
 
 def add_to_cart(request, product_id):
     if request.method == 'POST':
@@ -586,3 +810,248 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     """Password reset complete view."""
     template_name = 'accounts/password_reset_complete.html'
+
+
+# --- COMPANY DASHBOARD VIEWS ---
+
+def is_company(user):
+    """Helper to check if a user is a company/seller."""
+    if hasattr(user, 'profile'):
+        return user.profile.role == 'company'
+    return False
+
+def company_required(view_func):
+    """Decorator to ensure user is a company/seller."""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, "Please log in to access the company dashboard.")
+            return redirect('login')
+        if not is_company(request.user):
+            messages.error(request, "You must be a company/seller to access this area.")
+            return redirect('home')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+# views.py içinde company_dashboard fonksiyonunu bul ve değiştir:
+@company_required
+def company_dashboard(request):
+    """Display company's active products."""
+    # Sadece is_active=True olanları getir
+    products = Product.objects.filter(company=request.user, is_active=True).order_by('-created_at')
+    return render(request, 'company/dashboard.html', {'products': products})
+
+@company_required
+def company_add_product(request):
+    """Form to add a new product with image and variant (size/stock) support."""
+    if request.method == 'POST':
+        try:
+            brand_id = request.POST.get('brand')
+            category_id = request.POST.get('category')
+            
+            brand = Brand.objects.get(id=brand_id)
+            category = Category.objects.get(id=category_id) if category_id else None
+            
+            product = Product.objects.create(
+                company=request.user,
+                brand=brand,
+                category=category,
+                name=request.POST.get('name'),
+                description=request.POST.get('description'),
+                gender=request.POST.get('gender'),
+                price=request.POST.get('price'),
+                discount_percent=request.POST.get('discount_percent', 0),
+                material=request.POST.get('material'),
+            )
+
+            # 1. Resim Kaydetme
+            image_file = request.FILES.get('image')
+            if image_file:
+                ProductImage.objects.create(product=product, image=image_file, is_primary=True)
+
+            # 2. Varyant (Beden, Renk ve Stok) Kaydetme
+            color = request.POST.get('color', 'Standard')
+            sizes = request.POST.getlist('sizes') # İşaretlenen bedenlerin listesi
+            
+            for size in sizes:
+                # O bedene ait stoğu alıyoruz (stock_36, stock_37 vb.)
+                stock_val = int(request.POST.get(f'stock_{size}', 0))
+                # Benzersiz bir SKU üretiyoruz
+                sku = f"{product.id}-{size}-{color[:3].upper()}-{uuid.uuid4().hex[:6].upper()}"
+                
+                ProductVariant.objects.create(
+                    product=product,
+                    sku=sku,
+                    size=size,
+                    color=color,
+                    stock=stock_val,
+                    is_active=True
+                )
+
+            messages.success(request, f"Product '{product.name}' and variants added successfully!")
+            return redirect('company_dashboard')
+        except Exception as e:
+            messages.error(request, f"Error adding product: {str(e)}")
+    
+    brands = Brand.objects.all()
+    categories = Category.objects.all()
+    # Varsayılan ayakkabı bedenleri
+    all_sizes = ["36", "37", "38", "39", "40", "41", "42", "43"]
+    
+    return render(request, 'company/add_product.html', {
+        'brands': brands,
+        'categories': categories,
+        'all_sizes': all_sizes,
+    })
+
+@company_required
+def company_edit_product(request, product_id):
+    """Form to edit a product and its variants."""
+    product = get_object_or_404(Product, id=product_id, company=request.user)
+    all_sizes = ["36", "37", "38", "39", "40", "41", "42", "43"]
+    
+    if request.method == 'POST':
+        try:
+            brand_id = request.POST.get('brand')
+            category_id = request.POST.get('category')
+            
+            product.brand = Brand.objects.get(id=brand_id)
+            product.category = Category.objects.get(id=category_id) if category_id else None
+            product.name = request.POST.get('name')
+            product.description = request.POST.get('description')
+            product.gender = request.POST.get('gender')
+            product.price = request.POST.get('price')
+            product.discount_percent = request.POST.get('discount_percent', 0)
+            product.material = request.POST.get('material')
+            product.save()
+            
+            # Yeni resim yükleme kontrolü
+            new_image = request.FILES.get('new_image')
+            if new_image:
+                is_primary = not product.images.exists()
+                ProductImage.objects.create(product=product, image=new_image, is_primary=is_primary)
+            
+            # Varyantları Güncelleme
+            color = request.POST.get('color', 'Standard')
+            submitted_sizes = request.POST.getlist('sizes')
+            
+            for size in all_sizes:
+                variant = ProductVariant.objects.filter(product=product, size=size).first()
+                
+                if size in submitted_sizes:
+                    stock_val = int(request.POST.get(f'stock_{size}', 0))
+                    if variant:
+                        # Varyant varsa güncelle
+                        variant.stock = stock_val
+                        variant.color = color
+                        variant.is_active = True
+                        variant.save()
+                    else:
+                        # Varyant yoksa yeni oluştur
+                        sku = f"{product.id}-{size}-{color[:3].upper()}-{uuid.uuid4().hex[:6].upper()}"
+                        ProductVariant.objects.create(
+                            product=product, sku=sku, size=size, color=color, stock=stock_val, is_active=True
+                        )
+                else:
+                    # Beden işareti kaldırıldıysa, pasif yap ve stoğu sıfırla (Silmek sipariş hatasına yol açabilir)
+                    if variant:
+                        variant.is_active = False
+                        variant.stock = 0
+                        variant.save()
+            
+            messages.success(request, f"Product '{product.name}' updated successfully!")
+            return redirect('company_dashboard')
+        except Exception as e:
+            messages.error(request, f"Error updating product: {str(e)}")
+    
+    # Template'e gönderilecek mevcut varyant verilerini hazırla
+    existing_variants = {v.size: v for v in product.variants.all()}
+    variants_data = []
+    default_color = product.variants.first().color if product.variants.exists() else ''
+    
+    for size in all_sizes:
+        var = existing_variants.get(size)
+        variants_data.append({
+            'size': size,
+            'is_active': var.is_active if var else False,
+            'stock': var.stock if var else '',
+        })
+        
+    brands = Brand.objects.all()
+    categories = Category.objects.all()
+    return render(request, 'company/edit_product.html', {
+        'product': product,
+        'brands': brands,
+        'categories': categories,
+        'variants_data': variants_data,
+        'default_color': default_color,
+    })
+
+@company_required
+def company_delete_product(request, product_id):
+    """
+    Soft-delete a product to preserve order history.
+    Instead of deleting from DB, sets is_active=False and cancels pending orders.
+    """
+    product = get_object_or_404(Product, id=product_id, company=request.user)
+    
+    if request.method == 'POST':
+        product_name = product.name
+        
+        # 1. Ürünü ve varyantlarını siteden gizle (Soft Delete)
+        product.is_active = False
+        product.save()
+        
+        product.variants.update(is_active=False, stock=0)
+        
+        # 2. Bu ürünü içeren ve henüz teslim edilmemiş (pending, paid, shipped) siparişleri bul
+        # Sadece bu ürünün olduğu siparişleri etkilemek istiyoruz
+        affected_orders = Order.objects.filter(
+            items__variant__product=product,
+            status__in=['pending', 'paid', 'shipped']
+        ).distinct()
+        
+        # 3. Siparişlerin durumunu 'cancelled' olarak güncelle
+        for order in affected_orders:
+            order.status = 'cancelled'
+            order.save()
+            
+        messages.success(request, f"Product '{product_name}' has been removed from the store and active orders cancelled.")
+        return redirect('company_dashboard')
+    
+    return render(request, 'company/delete_product.html', {'product': product})
+
+
+# --- COMPANY IMAGE MANAGEMENT (YENI EKLENDI) ---
+
+@company_required
+def company_delete_image(request, image_id):
+    """Delete a product image via AJAX."""
+    if request.method == 'POST':
+        try:
+            image = ProductImage.objects.get(id=image_id, product__company=request.user)
+            image.delete()
+            return JsonResponse({'status': 'success', 'message': 'Image deleted successfully'})
+        except ProductImage.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Image not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+@company_required
+def company_set_primary_image(request, image_id):
+    """Set an image as primary for the product via AJAX."""
+    if request.method == 'POST':
+        try:
+            image = ProductImage.objects.get(id=image_id, product__company=request.user)
+            # Remove primary flag from all images of this product
+            image.product.images.update(is_primary=False)
+            # Set this image as primary
+            image.is_primary = True
+            image.save()
+            return JsonResponse({'status': 'success', 'message': 'Primary image updated'})
+        except ProductImage.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Image not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
