@@ -80,6 +80,24 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "status", "total_price", "created_at")
     list_filter = ("status",)
     search_fields = ("user__username", "id")
+    readonly_fields = ("id",)  # ✅ EKLE
+    
+    fieldsets = (  # ✅ EKLE: Tüm alanları buraya ekle
+        ("Order Information", {
+            "fields": ("id", "user", "status", "coupon", "total_price", "created_at")  # ✅ created_at
+        }),
+        ("Shipping Details", {
+            "fields": (
+                "shipping_full_name",
+                "shipping_phone_number",
+                "shipping_street_address",
+                "shipping_city",
+                "shipping_postal_code",
+                "shipping_country",
+            )
+        }),
+    )
+    
     inlines = (OrderItemInline,)
 
 @admin.register(OrderItem)

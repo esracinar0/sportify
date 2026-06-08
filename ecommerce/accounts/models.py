@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from decimal import Decimal
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 class Brand(models.Model):
     name = models.CharField(max_length=120, unique=True)
@@ -61,7 +62,7 @@ class Product(models.Model):
     material = models.CharField(max_length=100, blank=True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True, db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -185,7 +186,7 @@ class Order(models.Model):
     shipping_city = models.CharField(max_length=100, blank=True, default="")
     shipping_postal_code = models.CharField(max_length=20, blank=True, default="")
     shipping_country = models.CharField(max_length=100, blank=True, default="")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)  # ✅ DÜZELTILDI
 
     def __str__(self):
         return f"Order {self.id}"

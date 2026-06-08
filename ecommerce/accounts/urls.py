@@ -45,7 +45,10 @@ urlpatterns = [
     
     # Orders
     path('orders/', views.orders_view, name='orders'),
-    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),    
+    # YENI EKLENEN KISIM: Sipariş İptal ve İade linkleri
+    path('orders/<int:order_id>/cancel/', views.cancel_order, name='cancel_order'),
+    path('orders/<int:order_id>/return/', views.return_order, name='return_order'),
     
     # Shopping Cart & Checkout
     path('cart/', views.cart_page, name='cart_page'),

@@ -45,17 +45,29 @@ def category_page(request, category_slug):
         'men': 'men',
         'women': 'women',
         'kids': 'kids',
-        'sport': 'men',
+        # 'sport' ve 'all' gibi özel slug'ları genel görünüm için eşlemiyoruz
     }
-    gender = gender_map.get(category_slug)
-    if not gender:
-        return redirect('shoes') # 'shoes_view' yerine 'shoes' (url name'ine göre)
     
-    # 2. Ürünleri Başlangıçta Filtrele
-    products = Product.objects.filter(is_active=True, gender=gender)
+    # EĞER SLUG 'sport' (veya 'all') İSE TÜM AKTİF ÜRÜNLERİ GETİR
+    if category_slug in ['sport', 'all']:
+        products = Product.objects.filter(is_active=True)
+        category_title = "All Sport" # Sayfa başlığı için
+    else:
+        # Belirli bir cinsiyet eşleşmesi varsa sadece onları getir
+        gender = gender_map.get(category_slug)
+        if not gender:
+            return redirect('shoes_view') # Eşleşmeyen bir URL ise ana listeye at
+        
+        products = Product.objects.filter(is_active=True, gender=gender)
+        category_title = category_slug.title()
     
     # 3. Requestten Gelen Filtre Parametrelerini Al
-    selected_category_slug = request.GET.get('category') # URL'den gelen ek kategori filtresi
+    # Eğer kategori yoksa None değil, boş metin ('') döndür:
+    selected_category_slug = request.GET.get('category', '') 
+    
+    # Eğer URL'de halihazırda 'None' metni kaldıysa onu da temizle (Güvenlik önlemi):
+    if selected_category_slug == 'None':
+        selected_category_slug = ''
     selected_brands = request.GET.getlist('brand')
     selected_sizes = request.GET.getlist('size')
     sort_by = request.GET.get('sort', 'newest')
@@ -104,9 +116,9 @@ def category_page(request, category_slug):
     ]
     
     return render(request, 'category.html', {
-        'category': category_slug, # URL'deki ana cinsiyet
+        'category': category_slug, # URL'deki ana cinsiyet veya 'sport'
         'category_filter': selected_category_slug, # Filtrede seçili olan alt kategori
-        'category_title': category_slug.title(),
+        'category_title': category_title, # Dinamik başlık
         'shoes_info': shoes_info,
         'brands': brands,
         'categories': categories, # Template'e gönderildi
@@ -117,7 +129,6 @@ def category_page(request, category_slug):
         'page_obj': products_page,
         'total_results': paginator.count,
     })
-
 
 def search_page(request):
     """Dedicated search results page with advanced filtering."""
@@ -517,17 +528,15 @@ def orders_view(request):
     from django.utils import timezone
     from datetime import timedelta
     
-    # Automatically update all user's orders based on creation time
     now = timezone.now()
     
-    # Update to delivered if 2+ days old
+    # Status otomatiği (existing)
     Order.objects.filter(
         user=request.user,
         status__in=['paid', 'shipped'],
         created_at__lte=now - timedelta(days=2)
     ).update(status='delivered')
     
-    # Update to shipped if 1+ days old and still paid
     Order.objects.filter(
         user=request.user,
         status='paid',
@@ -535,8 +544,67 @@ def orders_view(request):
     ).update(status='shipped')
     
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    # ⭐ YENİ: Her order'a return eligibility flag ekle
+    for order in orders:
+        return_deadline = order.created_at + timedelta(days=14)
+        order.can_return = order.status == 'delivered' and now <= return_deadline
+        order.return_deadline = return_deadline
+    
     return render(request, 'orders.html', {'orders': orders})
 
+
+@login_required
+def cancel_order(request, order_id):
+    """Müşterinin henüz teslim edilmemiş siparişini iptal etmesi"""
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        
+        # Sadece pending, paid veya shipped olanlar iptal edilebilir
+        if order.status in ['pending', 'paid', 'shipped']:
+            order.status = 'cancelled'
+            order.save()
+            
+            # İptal edilen ürünlerin stoğunu sisteme geri yükle
+            for item in order.items.all():
+                if item.variant:
+                    item.variant.stock += item.quantity
+                    item.variant.save()
+                    
+            messages.success(request, f"Order #{order.id} has been successfully cancelled.")
+        else:
+            messages.error(request, "This order cannot be cancelled at this stage.")
+            
+    return redirect('orders')
+
+@login_required
+def return_order(request, order_id):
+    if request.method == 'POST':
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        now = timezone.now()
+        return_deadline = order.created_at + timedelta(days=14)
+        
+        # ⭐ YENİ: 14 günü kontrol et
+        if order.status == 'delivered' and now <= return_deadline:
+            order.status = 'cancelled'
+            order.save()
+            
+            for item in order.items.all():
+                if item.variant:
+                    item.variant.stock += item.quantity
+                    item.variant.save()
+                    
+            messages.success(request, f"Return process initiated for Order #{order.id}. You will be refunded within 14 days.")
+        else:
+            if order.status != 'delivered':
+                messages.error(request, "Only delivered orders can be returned.")
+            else:
+                messages.error(request, "Return period expired. This order is outside the 14-day return window.")
+            
+    return redirect('orders')
 
 @login_required
 def order_detail(request, order_id):
